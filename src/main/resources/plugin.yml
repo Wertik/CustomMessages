@@ -1,0 +1,8 @@
+name: ${project.name}
+main: ${project.groupId}.CustomMessagesPlugin
+version: ${project.version}
+authors: [Wertik1206]
+commands:
+  custommessages:
+    aliases: [cm, messages, custommessage]
+    description: Main plugin command.

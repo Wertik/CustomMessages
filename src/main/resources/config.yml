@@ -1,0 +1,12 @@
+# Configuration for ${project.name}
+#
+# Version: ${project.version}
+
+plugin-prefix: '&eCustomMessages &8>> '
+debug-enabled: true
+
+# Configure the format for leave/join messages.
+# Remove format to disable.
+formats:
+  join: '&a+ &7%message%'
+  leave: '&c- &7%message%'

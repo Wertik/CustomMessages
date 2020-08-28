@@ -1,0 +1,40 @@
+# Customisation file for ${project.name} ${project.version}
+
+menus:
+  message-overview:
+    title: '&7Custom Messages: &f%type%'
+    matrix:
+      - '         '
+      - ' mmmmmmm '
+      - ' mmmmmmm '
+      - '         '
+      - '  p c n  '
+    items:
+      page-next:
+        matrix-char: 'n'
+        type: ARROW
+        name: '&fNext'
+        lore:
+          - '&7Click to turn to next page'
+      page-previous:
+        matrix-char: 'p'
+        type: ARROW
+        name: '&fPrevious'
+        lore:
+          - '&7Click to turn to previous page'
+      message-item:
+        matrix-char: 'm'
+        type: PAPER
+        name: '&7Message: %message_name%'
+        lore:
+          - '%message_formatted%'
+          - ''
+          - '&7Click to set'
+      message-item-taken:
+        matrix-char: 'm'
+        type: PAPER
+        name: '&7Message: %message_name%'
+        lore:
+          - '%message_formatted%'
+          - ''
+          - '&7You have this message!'
