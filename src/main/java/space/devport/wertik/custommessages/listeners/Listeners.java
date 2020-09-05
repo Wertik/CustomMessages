@@ -30,16 +30,14 @@ public class Listeners {
         registerListener(MessageType.JOIN, new Listener() {
             @EventHandler
             public void onJoin(PlayerJoinEvent event) {
-                if (handle(event.getPlayer(), MessageType.JOIN) != null)
-                    event.setJoinMessage(handle(event.getPlayer(), MessageType.JOIN));
+                event.setJoinMessage(handle(event.getPlayer(), MessageType.JOIN));
             }
         });
 
         registerListener(MessageType.LEAVE, new Listener() {
             @EventHandler
             public void onLeave(PlayerQuitEvent event) {
-                if (handle(event.getPlayer(), MessageType.LEAVE) != null)
-                    event.setQuitMessage(handle(event.getPlayer(), MessageType.LEAVE));
+                event.setQuitMessage(handle(event.getPlayer(), MessageType.LEAVE));
             }
         });
 
