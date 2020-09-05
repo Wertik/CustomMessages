@@ -2,6 +2,7 @@ package space.devport.wertik.custommessages.system;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.text.message.Message;
 import space.devport.wertik.custommessages.CustomMessagesPlugin;
@@ -67,6 +68,7 @@ public class MessageManager {
         plugin.getConsoleOutput().info("Loaded " + this.loadedMessages.size() + " message(s)...");
     }
 
+    @Nullable
     public String parseMessage(Player player, MessageType type, String messageName) {
 
         if (!plugin.getConfiguration().section("formats").contains(type.toString().toLowerCase())) return null;
@@ -76,11 +78,14 @@ public class MessageManager {
         Message message = getMessage(type, messageName)
                 .replace("%player%", player.getName());
 
+        if (message.isEmpty()) return null;
+
         format = format.replaceAll("(?i)%message%", message.toString());
 
         return MessageUtil.formatMessage(format, player);
     }
 
+    @Nullable
     public String parseMessage(Player player, MessageType type) {
         User user = plugin.getUserManager().getUser(player);
         return parseMessage(player, type, user.getMessage(type));

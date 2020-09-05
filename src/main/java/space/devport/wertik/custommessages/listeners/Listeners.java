@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.Nullable;
 import space.devport.wertik.custommessages.CustomMessagesPlugin;
 import space.devport.wertik.custommessages.system.MessageManager;
 import space.devport.wertik.custommessages.system.struct.MessageType;
@@ -50,6 +51,7 @@ public class Listeners {
         this.registeredListeners.put(type, listener);
     }
 
+    @Nullable
     private String handle(Player player, MessageType type) {
         return messageManager.parseMessage(player, type);
     }
