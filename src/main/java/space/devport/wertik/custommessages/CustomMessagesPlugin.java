@@ -2,6 +2,7 @@ package space.devport.wertik.custommessages;
 
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import org.bukkit.event.HandlerList;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.wertik.custommessages.commands.CustomMessagesCommand;
@@ -74,6 +75,7 @@ public class CustomMessagesPlugin extends DevportPlugin {
 
     @Override
     public void onPluginDisable() {
+        HandlerList.unregisterAll(this);
         this.userManager.save();
     }
 
