@@ -40,10 +40,11 @@ public class PreviewSubCommand extends SubCommand {
             target = (Player) sender;
         }
 
+        String message = plugin.getMessageManager().parseMessage(target, type);
         language.getPrefixed("Commands.Preview.Done")
                 .replace("%player%", target.getName())
                 .replace("%type%", type.toString().toLowerCase())
-                .replace("%message%", plugin.getMessageManager().parseMessage(target, type))
+                .replace("%message%", message == null ? "&cNone" : message)
                 .send(sender);
         return CommandResult.SUCCESS;
     }

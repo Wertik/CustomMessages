@@ -28,6 +28,10 @@ public class User {
         this.messages.put(type, message);
     }
 
+    public void clearMessages() {
+        this.messages.clear();
+    }
+
     public Map<MessageType, String> getMessages() {
         return Collections.unmodifiableMap(messages);
     }
