@@ -4,9 +4,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.Nullable;
-import space.devport.wertik.custommessages.CustomMessagesPlugin;
+import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.MessageManager;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 
@@ -15,10 +16,10 @@ import java.util.Map;
 
 public class Listeners {
 
-    private final CustomMessagesPlugin plugin;
+    private final MessagePlugin plugin;
     private final MessageManager messageManager;
 
-    public Listeners(CustomMessagesPlugin plugin) {
+    public Listeners(MessagePlugin plugin) {
         this.plugin = plugin;
         this.messageManager = plugin.getMessageManager();
     }
@@ -38,6 +39,14 @@ public class Listeners {
             @EventHandler
             public void onLeave(PlayerQuitEvent event) {
                 event.setQuitMessage(handle(event.getPlayer(), MessageType.LEAVE));
+            }
+        });
+
+        registerListener(MessageType.KICK, new Listener() {
+            @EventHandler
+            public void onKick(PlayerKickEvent event) {
+                String message = handle(event.getPlayer(), MessageType.KICK);
+                event.setLeaveMessage(message == null ? "" : message);
             }
         });
 

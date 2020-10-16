@@ -9,7 +9,7 @@ import space.devport.utils.commands.SubCommand;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.commands.struct.Preconditions;
-import space.devport.wertik.custommessages.CustomMessagesPlugin;
+import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.commands.CommandUtils;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 import space.devport.wertik.custommessages.system.struct.User;
@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 
 public class SetSubCommand extends SubCommand {
 
-    private final CustomMessagesPlugin plugin;
+    private final MessagePlugin plugin;
 
     public SetSubCommand() {
         super("set");
-        this.plugin = CustomMessagesPlugin.getInstance();
+        this.plugin = MessagePlugin.getInstance();
         this.preconditions = new Preconditions()
                 .permissions("custommessages.set");
     }

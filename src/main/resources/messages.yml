@@ -9,3 +9,6 @@ join:
 leave:
   default: '&7%player% left the game.'
   begone: '&7Begone! &f%player%! &7&oWhat a neat magic trick huh?'
+
+kick:
+  default: ''

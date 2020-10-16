@@ -1,12 +1,13 @@
 package space.devport.wertik.custommessages.gui;
 
 import org.bukkit.entity.Player;
+import space.devport.utils.CustomisationManager;
 import space.devport.utils.menu.Menu;
 import space.devport.utils.menu.MenuBuilder;
 import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
-import space.devport.wertik.custommessages.CustomMessagesPlugin;
+import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 import space.devport.wertik.custommessages.system.struct.User;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class MessageMenu extends Menu {
 
-    private final CustomMessagesPlugin plugin;
+    private final MessagePlugin plugin;
 
     private final Player player;
 
@@ -28,10 +29,10 @@ public class MessageMenu extends Menu {
         super("custommessages_preview");
         this.player = player;
         this.type = type;
-        this.plugin = CustomMessagesPlugin.getInstance();
+        this.plugin = MessagePlugin.getInstance();
 
         this.page = page;
-        this.slotsPerPage = countMatrixSlots(plugin.getCustomisationManager().getMenuBuilder("message-overview").construct(), 'm');
+        this.slotsPerPage = countMatrixSlots(plugin.getManager(CustomisationManager.class).getMenuBuilder("message-overview").construct(), 'm');
 
         build();
     }
@@ -56,7 +57,7 @@ public class MessageMenu extends Menu {
         User user = plugin.getUserManager().getUser(player);
         String usedMessage = user.getMessage(type);
 
-        MenuBuilder menuBuilder = new MenuBuilder(plugin.getCustomisationManager().getMenuBuilder("message-overview").construct());
+        MenuBuilder menuBuilder = new MenuBuilder(plugin.getManager(CustomisationManager.class).getMenuBuilder("message-overview").construct());
 
         MatrixItem messageMatrix = menuBuilder.getMatrixItem('m');
         messageMatrix.clear();

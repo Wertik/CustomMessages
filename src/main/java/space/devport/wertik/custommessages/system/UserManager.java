@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.bukkit.OfflinePlayer;
-import space.devport.wertik.custommessages.CustomMessagesPlugin;
+import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.struct.User;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.util.UUID;
 
 public class UserManager {
 
-    private final CustomMessagesPlugin plugin;
+    private final MessagePlugin plugin;
 
     private final Gson gson = new GsonBuilder()
             // .setPrettyPrinting()
@@ -29,7 +29,7 @@ public class UserManager {
 
     private final Map<UUID, User> loadedUsers = new HashMap<>();
 
-    public UserManager(CustomMessagesPlugin plugin) {
+    public UserManager(MessagePlugin plugin) {
         this.plugin = plugin;
     }
 

@@ -4,7 +4,8 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import space.devport.wertik.custommessages.CustomMessagesPlugin;
+import space.devport.utils.text.language.LanguageManager;
+import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 
 @UtilityClass
@@ -16,7 +17,7 @@ public class CommandUtils {
         } catch (IllegalArgumentException ignored) {
         }
 
-        CustomMessagesPlugin.getInstance().getLanguageManager().getPrefixed("Commands.Invalid-Type")
+        MessagePlugin.getInstance().getManager(LanguageManager.class).getPrefixed("Commands.Invalid-Type")
                 .replace("%param%", arg)
                 .send(sender);
         return null;
@@ -25,7 +26,7 @@ public class CommandUtils {
     public Player parsePlayer(CommandSender sender, String arg) {
         Player player = Bukkit.getPlayer(arg);
         if (player == null) {
-            CustomMessagesPlugin.getInstance().getLanguageManager().getPrefixed("Commands.Invalid-Player")
+            MessagePlugin.getInstance().getManager(LanguageManager.class).getPrefixed("Commands.Invalid-Player")
                     .replace("%param%", arg)
                     .send(sender);
             return null;

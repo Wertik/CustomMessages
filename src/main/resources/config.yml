@@ -10,3 +10,4 @@ debug-enabled: true
 formats:
   join: '&a+ &7%message%'
   leave: '&c- &7%message%'
+  kick: '%message%'

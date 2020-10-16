@@ -7,10 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 
 @RequiredArgsConstructor
-public class CustomMessagePlaceholders extends PlaceholderExpansion {
+public class MessagePlaceholders extends PlaceholderExpansion {
 
-    private final CustomMessagesPlugin plugin;
+    private final MessagePlugin plugin;
 
+    /*
+     * %custommessages_message_(formatted)%
+     * */
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
 

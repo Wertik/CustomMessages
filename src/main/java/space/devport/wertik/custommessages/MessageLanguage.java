@@ -1,8 +1,13 @@
 package space.devport.wertik.custommessages;
 
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.text.language.LanguageDefaults;
 
-public class CustomMessagesLanguage extends LanguageDefaults {
+public class MessageLanguage extends LanguageDefaults {
+
+    public MessageLanguage(DevportPlugin plugin) {
+        super(plugin);
+    }
 
     @Override
     public void setDefaults() {
@@ -13,6 +18,6 @@ public class CustomMessagesLanguage extends LanguageDefaults {
         addDefault("Commands.Set.Done", "&7Set message &f%message% &7in message type &f%type%");
         addDefault("Commands.Set.Done-Others", "&7Set message &f%message% &7in message type &f%type% &7for &f%player%");
 
-        addDefault("Commands.Preview.Done-Others", "&7Sent preview to &f%player% &7in type &f%type%");
+        addDefault("Commands.Preview.Done", "&7Preview: &f'%message%&f'");
     }
 }

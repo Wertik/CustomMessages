@@ -5,22 +5,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.text.message.Message;
-import space.devport.wertik.custommessages.CustomMessagesPlugin;
+import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.struct.MessageStorage;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 import space.devport.wertik.custommessages.system.struct.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MessageManager {
 
-    private final CustomMessagesPlugin plugin;
+    private final MessagePlugin plugin;
 
     private final Map<MessageType, MessageStorage> loadedMessages = new HashMap<>();
 
     private Configuration messageConfiguration;
 
-    public MessageManager(CustomMessagesPlugin plugin) {
+    public MessageManager(MessagePlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -71,9 +75,10 @@ public class MessageManager {
     @Nullable
     public String parseMessage(Player player, MessageType type, String messageName) {
 
-        if (!plugin.getConfiguration().section("formats").contains(type.toString().toLowerCase())) return null;
+        if (!plugin.getConfiguration().section("formats").contains(type.toString().toLowerCase()))
+            return null;
 
-        String format = plugin.getConfig().getString("formats." + type.toString().toLowerCase(), "%message%");
+        String format = plugin.getConfiguration().getString("formats." + type.toString().toLowerCase(), "%message%");
 
         Message message = getMessage(type, messageName)
                 .replace("%player%", player.getName());

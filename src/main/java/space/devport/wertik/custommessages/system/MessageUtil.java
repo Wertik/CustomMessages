@@ -7,14 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import space.devport.utils.text.StringUtil;
 
-import java.util.UUID;
-
 @UtilityClass
 public class MessageUtil {
-
-    public String formatMessage(String message, UUID uniqueID) {
-        return formatMessage(message, Bukkit.getPlayer(uniqueID));
-    }
 
     public String formatMessage(String message, Player player) {
 

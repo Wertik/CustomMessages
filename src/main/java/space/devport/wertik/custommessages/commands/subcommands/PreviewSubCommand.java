@@ -7,17 +7,17 @@ import space.devport.utils.commands.SubCommand;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.commands.struct.Preconditions;
-import space.devport.wertik.custommessages.CustomMessagesPlugin;
+import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.commands.CommandUtils;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 
 public class PreviewSubCommand extends SubCommand {
 
-    private final CustomMessagesPlugin plugin;
+    private final MessagePlugin plugin;
 
     public PreviewSubCommand() {
         super("preview");
-        this.plugin = CustomMessagesPlugin.getInstance();
+        this.plugin = MessagePlugin.getInstance();
         this.preconditions = new Preconditions()
                 .permissions("custommessages.preview");
     }
@@ -40,14 +40,11 @@ public class PreviewSubCommand extends SubCommand {
             target = (Player) sender;
         }
 
-        target.sendMessage(plugin.getMessageManager().parseMessage(target, type));
-        if (target != sender) {
-            language.getPrefixed("Commands.Preview.Done-Others")
-                    .replace("%player%", target.getName())
-                    .replace("%type%", type.toString().toLowerCase())
-                    .send(sender);
-            sender.sendMessage(plugin.getMessageManager().parseMessage(target, type));
-        }
+        language.getPrefixed("Commands.Preview.Done")
+                .replace("%player%", target.getName())
+                .replace("%type%", type.toString().toLowerCase())
+                .replace("%message%", plugin.getMessageManager().parseMessage(target, type))
+                .send(sender);
         return CommandResult.SUCCESS;
     }
 

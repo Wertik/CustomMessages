@@ -5,6 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import org.bukkit.event.HandlerList;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.custommessages.commands.CustomMessagesCommand;
 import space.devport.wertik.custommessages.commands.subcommands.MenuSubCommand;
 import space.devport.wertik.custommessages.commands.subcommands.PreviewSubCommand;
@@ -14,12 +15,9 @@ import space.devport.wertik.custommessages.listeners.Listeners;
 import space.devport.wertik.custommessages.system.MessageManager;
 import space.devport.wertik.custommessages.system.UserManager;
 
-public class CustomMessagesPlugin extends DevportPlugin {
+public class MessagePlugin extends DevportPlugin {
 
-    @Getter
-    private static CustomMessagesPlugin instance;
-
-    private CustomMessagePlaceholders placeholders;
+    private MessagePlaceholders placeholders;
 
     @Getter
     private MessageManager messageManager;
@@ -30,10 +28,12 @@ public class CustomMessagesPlugin extends DevportPlugin {
     @Getter
     private Listeners listeners;
 
+    public static MessagePlugin getInstance() {
+        return getPlugin(MessagePlugin.class);
+    }
+
     @Override
     public void onPluginEnable() {
-        instance = this;
-
         this.messageManager = new MessageManager(this);
         messageManager.load();
 
@@ -45,7 +45,7 @@ public class CustomMessagesPlugin extends DevportPlugin {
         this.listeners = new Listeners(this);
         listeners.registerListeners();
 
-        new CustomMessagesLanguage();
+        new MessageLanguage(this);
 
         addMainCommand(new CustomMessagesCommand())
                 .addSubCommand(new ReloadSubCommand())
@@ -58,7 +58,7 @@ public class CustomMessagesPlugin extends DevportPlugin {
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 
             if (placeholders == null)
-                this.placeholders = new CustomMessagePlaceholders(this);
+                this.placeholders = new MessagePlaceholders(this);
 
             // Attempt to unregister
             if (VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1) {
