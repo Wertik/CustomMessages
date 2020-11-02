@@ -1,6 +1,6 @@
 package space.devport.wertik.custommessages.system;
 
-import org.bukkit.OfflinePlayer;
+import com.google.common.base.Strings;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,28 +29,12 @@ public class MessageManager {
         this.plugin = plugin;
     }
 
-    public Message getDefault(MessageType type) {
-        return getMessage(type, "default");
-    }
-
-    @NotNull
-    public Message getMessage(MessageType type, String key) {
-
-        if (key == null) return getDefault(type);
-
-        MessageStorage storage = this.loadedMessages.getOrDefault(type, null);
-
-        if (storage == null)
-            return key.equalsIgnoreCase("default") ? new Message() : getDefault(type);
-        Message message = storage.get(key);
-        if (message == null)
-            return key.equalsIgnoreCase("default") ? new Message() : getDefault(type);
-
-        return new Message(message);
-    }
-
-    public Message getMessage(MessageType type, OfflinePlayer player) {
-        return getMessage(type, plugin.getUserManager().getUser(player).getMessage(type));
+    /**
+     * Fetch requested message, try to return the default.
+     */
+    @Nullable
+    public MessageStorage getStorage(@NotNull MessageType type) {
+        return this.loadedMessages.get(type);
     }
 
     public void load() {
@@ -63,7 +47,12 @@ public class MessageManager {
             String typeName = type.toString().toLowerCase();
 
             if (messageConfiguration.getFileConfiguration().contains(typeName)) {
-                MessageStorage storage = MessageStorage.from(messageConfiguration, typeName);
+                String format = plugin.getConfiguration().getString("formats." + typeName);
+
+                if (Strings.isNullOrEmpty(format))
+                    continue;
+
+                MessageStorage storage = MessageStorage.from(messageConfiguration, typeName, format);
 
                 if (storage == null)
                     continue;
@@ -76,43 +65,39 @@ public class MessageManager {
     }
 
     @Nullable
-    public String parseMessage(Player player, MessageType type, String messageName) {
+    public String getFormattedMessage(@Nullable Player player, @NotNull MessageType type, @Nullable String messageName) {
 
-        if (!plugin.getConfiguration().section("formats").contains(type.toString().toLowerCase()))
+        MessageStorage storage = getStorage(type);
+
+        if (storage == null)
             return null;
 
-        String format = plugin.getConfiguration().getString("formats." + type.toString().toLowerCase());
+        String format = storage.getFormat();
 
-        if (format == null)
+        if (Strings.isNullOrEmpty(format))
             return null;
 
-        Message message = getMessage(type, messageName)
-                .replace("%player%", player.getName());
+        if (!storage.has(messageName))
+            messageName = "default";
 
-        if (message.isEmpty())
+        Message message = storage.get(messageName);
+
+        if (message == null || message.isEmpty())
             return null;
-
-        message = parseAdditional(message, player);
 
         format = format.replaceAll("(?i)%message%", message.toString());
 
         return MessageUtil.formatMessage(format, player);
     }
 
-    public Message parseAdditional(Message message, Player player) {
-        return message.replace("%message_leave%", getMessage(MessageType.LEAVE, player))
-                .replace("%message_join%", getMessage(MessageType.JOIN, player))
-                .replace("%message_kick%", getMessage(MessageType.KICK, player));
-    }
-
     @Nullable
-    public String parseMessage(Player player, MessageType type) {
-        User user = plugin.getUserManager().getUser(player);
-        return parseMessage(player, type, user.getMessage(type));
+    public String getFormattedMessage(Player player, MessageType type) {
+        User user = plugin.getUserManager().getOrCreateUser(player);
+        return getFormattedMessage(player, type, user.getMessage(type));
     }
 
     public List<String> getMessages(MessageType type) {
-        MessageStorage storage = this.loadedMessages.getOrDefault(type, null);
+        MessageStorage storage = this.loadedMessages.get(type);
         return storage == null ? new ArrayList<>() : new ArrayList<>(storage.getMessages().keySet());
     }
 

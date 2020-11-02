@@ -3,12 +3,9 @@
 # Version: ${project.version}
 
 join:
-  default: '&7%player% joined the game.'
-  enter-devil: '&7The Devil, &f%player%&7, has entered our realm.'
+  default: '&f%player% &7joined the game.'
+  enter-devil: '&7The Devil, &c%player%&7, has entered our realm.'
 
 leave:
-  default: '&7%player% left the game.'
+  default: '&f%player% &7left the game.'
   begone: '&7Begone! &f%player%! &7&oWhat a neat magic trick huh?'
-
-kick:
-  default: ''

@@ -6,7 +6,7 @@
 
     <groupId>space.devport.wertik.custommessages</groupId>
     <artifactId>CustomMessages</artifactId>
-    <version>1.0.3</version>
+    <version>1.1.0</version>
 
     <name>CustomMessages</name>
 
@@ -40,7 +40,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.2.4</version>
                 <configuration>
                     <minimizeJar>true</minimizeJar>
                     <relocations>
@@ -69,15 +69,11 @@
         </repository>
         <repository>
             <id>devport</id>
-            <url>http://play.pvpcraft.cz:8081/repository/devport/</url>
+            <url>https://nexus.pvpcraft.cz/repository/devport/</url>
         </repository>
         <repository>
             <id>placeholderapi</id>
             <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -97,7 +93,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>1.18.16</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -111,11 +107,6 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.10.9</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,7 +1,6 @@
 package space.devport.wertik.custommessages.system.struct;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
@@ -14,19 +13,29 @@ import java.util.Map;
 public class MessageStorage {
 
     @Getter
-    @Setter
-    private Map<String, Message> messages = new HashMap<>();
+    private final String format;
 
-    public void add(String key, Message value) {
-        this.messages.put(key, value);
+    @Getter
+    private final Map<String, Message> messages = new HashMap<>();
+
+    public MessageStorage(String format) {
+        this.format = format;
     }
 
-    public Message get(String key) {
-        return messages.get(key);
+    public void add(String name, Message message) {
+        this.messages.put(name, message);
+    }
+
+    public Message get(String name) {
+        return messages.get(name);
+    }
+
+    public boolean has(String name) {
+        return messages.containsKey(name);
     }
 
     @Nullable
-    public static MessageStorage from(Configuration configuration, String path) {
+    public static MessageStorage from(Configuration configuration, String path, String format) {
 
         ConfigurationSection section = configuration.getFileConfiguration().getConfigurationSection(path);
 
@@ -35,7 +44,7 @@ public class MessageStorage {
             return null;
         }
 
-        MessageStorage storage = new MessageStorage();
+        MessageStorage storage = new MessageStorage(format);
 
         for (String key : section.getKeys(false)) {
             storage.add(key, configuration.getMessage(section.getCurrentPath() + "." + key));

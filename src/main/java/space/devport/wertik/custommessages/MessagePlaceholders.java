@@ -28,11 +28,13 @@ public class MessagePlaceholders extends PlaceholderExpansion {
         if (type == null) return "invalid_type";
 
         if (args[0].toLowerCase().equals("message")) {
-            if (args.length > 2)
-                if (args[2].equalsIgnoreCase("formatted"))
-                    return plugin.getMessageManager().parseMessage(player, type) != null ? plugin.getMessageManager().parseMessage(player, type) : "none";
-                else return "invalid_param";
-            return plugin.getUserManager().getUser(player).getMessage(type);
+            if (args.length < 3)
+                return plugin.getUserManager().getOrCreateUser(player).getMessage(type);
+
+            if (args[2].equalsIgnoreCase("formatted")) {
+                String msg = plugin.getMessageManager().getFormattedMessage(player, type);
+                return msg != null ? msg : "none";
+            }
         }
 
         return "invalid_params";

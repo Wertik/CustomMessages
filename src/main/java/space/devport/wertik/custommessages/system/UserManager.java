@@ -1,19 +1,13 @@
 package space.devport.wertik.custommessages.system;
 
-import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import space.devport.utils.ConsoleOutput;
+import space.devport.utils.utility.json.GsonHelper;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.struct.User;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,9 +17,7 @@ public class UserManager {
 
     private final MessagePlugin plugin;
 
-    private final Gson gson = new GsonBuilder()
-            // .setPrettyPrinting()
-            .create();
+    private final GsonHelper gsonHelper = new GsonHelper();
 
     private final Map<UUID, User> loadedUsers = new HashMap<>();
 
@@ -33,18 +25,27 @@ public class UserManager {
         this.plugin = plugin;
     }
 
+    @Nullable
+    public User getUser(OfflinePlayer player) {
+        return getUser(player.getUniqueId());
+    }
+
+    @Nullable
     public User getUser(UUID uniqueID) {
-        if (!this.loadedUsers.containsKey(uniqueID)) {
-            plugin.getConsoleOutput().debug("Creating a new user");
-            return createUser(uniqueID);
-        }
-        return this.loadedUsers.getOrDefault(uniqueID, null);
+        return this.loadedUsers.get(uniqueID);
     }
 
-    public User getUser(OfflinePlayer offlinePlayer) {
-        return getUser(offlinePlayer.getUniqueId());
+    @NotNull
+    public User getOrCreateUser(UUID uniqueID) {
+        return this.loadedUsers.containsKey(uniqueID) ? this.loadedUsers.get(uniqueID) : createUser(uniqueID);
     }
 
+    @NotNull
+    public User getOrCreateUser(OfflinePlayer offlinePlayer) {
+        return getOrCreateUser(offlinePlayer.getUniqueId());
+    }
+
+    @NotNull
     public User createUser(UUID uniqueID) {
         User user = new User(uniqueID);
         this.loadedUsers.put(uniqueID, user);
@@ -52,26 +53,20 @@ public class UserManager {
     }
 
     public void load() {
-        this.loadedUsers.clear();
+        gsonHelper.loadMapAsync(plugin.getDataFolder().getPath() + "/data.json", UUID.class, User.class).thenAcceptAsync(users -> {
 
-        Path path = Paths.get(plugin.getDataFolder().getPath() + "/data.json");
+            if (users == null)
+                users = new HashMap<>();
 
-        if (!Files.exists(path)) return;
+            this.loadedUsers.clear();
+            this.loadedUsers.putAll(users);
 
-        String input;
-        try {
-            input = String.join("", Files.readAllLines(path));
-        } catch (IOException e) {
+            ConsoleOutput.getInstance().info("Loaded " + this.loadedUsers.size() + " user(s)...");
+        }).exceptionally(e -> {
+            ConsoleOutput.getInstance().err("Could not load users: " + e.getMessage());
             e.printStackTrace();
-            return;
-        }
-
-        if (Strings.isNullOrEmpty(input)) return;
-
-        this.loadedUsers.putAll(gson.fromJson(input, new TypeToken<Map<UUID, User>>() {
-        }.getType()));
-
-        plugin.getConsoleOutput().info("Loaded " + this.loadedUsers.size() + " user(s)...");
+            return null;
+        });
     }
 
     private void purgeEmpty() {
@@ -90,19 +85,12 @@ public class UserManager {
 
         final Map<UUID, User> finalCache = new HashMap<>(this.loadedUsers);
 
-        plugin.getConsoleOutput().info("Saving " + finalCache.size() + " user(s)...");
-
-        String output = gson.toJson(finalCache, new TypeToken<Map<UUID, User>>() {
-        }.getType());
-
-        plugin.getConsoleOutput().debug("JSON: " + output);
-
-        Path path = Paths.get(plugin.getDataFolder().getPath() + "/data.json");
-
-        try {
-            Files.write(path, output.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
-        } catch (IOException e) {
+        gsonHelper.save(finalCache, plugin.getDataFolder().getPath() + "/data.json").thenRunAsync(() -> {
+            ConsoleOutput.getInstance().info("Saved " + finalCache.size() + " user(s)...");
+        }).exceptionally(e -> {
+            ConsoleOutput.getInstance().err("Could not save users: " + e.getMessage());
             e.printStackTrace();
-        }
+            return null;
+        });
     }
 }

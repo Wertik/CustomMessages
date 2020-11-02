@@ -2,23 +2,20 @@ package space.devport.wertik.custommessages.commands.subcommands;
 
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.commands.SubCommand;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.commands.struct.Preconditions;
 import space.devport.wertik.custommessages.MessagePlugin;
+import space.devport.wertik.custommessages.commands.MessageSubCommand;
 
-public class ReloadSubCommand extends SubCommand {
+public class ReloadSubCommand extends MessageSubCommand {
 
-    public ReloadSubCommand() {
-        super("reload");
-        this.preconditions = new Preconditions()
-                .permissions("custommessages.reload");
+    public ReloadSubCommand(MessagePlugin plugin) {
+        super(plugin, "reload");
     }
 
     @Override
     protected CommandResult perform(CommandSender sender, String label, String[] args) {
-        MessagePlugin.getInstance().reload(sender);
+        plugin.reload(sender);
         return CommandResult.SUCCESS;
     }
 

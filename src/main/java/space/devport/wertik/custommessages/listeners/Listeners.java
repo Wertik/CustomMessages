@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.MessageManager;
@@ -40,13 +41,14 @@ public class Listeners {
             public void onLeave(PlayerQuitEvent event) {
                 event.setQuitMessage(handle(event.getPlayer(), MessageType.LEAVE));
             }
-        });
 
-        registerListener(MessageType.KICK, new Listener() {
             @EventHandler
             public void onKick(PlayerKickEvent event) {
-                String message = handle(event.getPlayer(), MessageType.KICK);
-                event.setLeaveMessage(message == null ? "" : message);
+                String msg = handle(event.getPlayer(), MessageType.LEAVE);
+                // Both kick and leave message are sent when a player is kicked.
+                // When we are sending a leave message, avoid the kick one.
+                if (msg != null)
+                    event.setLeaveMessage("");
             }
         });
 
@@ -59,7 +61,7 @@ public class Listeners {
     }
 
     @Nullable
-    private String handle(Player player, MessageType type) {
-        return messageManager.parseMessage(player, type);
+    private String handle(@NotNull Player player, @NotNull MessageType type) {
+        return messageManager.getFormattedMessage(player, type);
     }
 }

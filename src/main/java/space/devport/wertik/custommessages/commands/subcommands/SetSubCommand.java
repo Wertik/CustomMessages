@@ -5,12 +5,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.commands.SubCommand;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.commands.struct.Preconditions;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.commands.CommandUtils;
+import space.devport.wertik.custommessages.commands.MessageSubCommand;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 import space.devport.wertik.custommessages.system.struct.User;
 
@@ -19,20 +19,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SetSubCommand extends SubCommand {
+public class SetSubCommand extends MessageSubCommand {
 
-    private final MessagePlugin plugin;
-
-    public SetSubCommand() {
-        super("set");
-        this.plugin = MessagePlugin.getInstance();
-        this.preconditions = new Preconditions()
-                .permissions("custommessages.set");
+    public SetSubCommand(MessagePlugin plugin) {
+        super(plugin, "set");
     }
 
     @Override
     protected CommandResult perform(CommandSender sender, String label, String[] args) {
         MessageType type = CommandUtils.parseType(sender, args[0]);
+
         if (type == null) return CommandResult.FAILURE;
 
         if (!plugin.getMessageManager().getMessages(type).contains(args[1])) {
@@ -56,7 +52,7 @@ public class SetSubCommand extends SubCommand {
             target = (Player) sender;
         }
 
-        User user = plugin.getUserManager().getUser(target);
+        User user = plugin.getUserManager().getOrCreateUser(target);
         user.setMessage(type, args[1]);
 
         language.getPrefixed(target == sender ? "Commands.Set.Done" : "Commands.Set.Done-Others")

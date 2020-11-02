@@ -5,8 +5,7 @@ import org.jetbrains.annotations.Nullable;
 public enum MessageType {
 
     JOIN,
-    LEAVE,
-    KICK;
+    LEAVE;
 
     @Nullable
     public static MessageType fromString(String str) {
