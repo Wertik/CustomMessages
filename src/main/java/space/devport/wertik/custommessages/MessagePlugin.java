@@ -52,22 +52,29 @@ public class MessagePlugin extends DevportPlugin {
         addMainCommand(new MessageCommand(this));
     }
 
-    private void setupPlaceholders() {
-        if (!getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            return;
-        }
+    private void unregisterPlaceholders() {
 
-        if (placeholders == null)
-            this.placeholders = new MessagePlaceholders(this);
+        if (this.placeholders == null)
+            return;
 
         // Attempt to unregister expansion
         if (VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1 &&
                 this.placeholders.isRegistered()) {
 
             this.placeholders.unregister();
-            consoleOutput.debug("Unregistered expansion");
+            this.placeholders = null;
+            consoleOutput.debug("Unregistered placeholder expansion.");
+        }
+    }
+
+    private void setupPlaceholders() {
+        if (!getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            return;
         }
 
+        this.unregisterPlaceholders();
+
+        this.placeholders = new MessagePlaceholders(this);
         this.placeholders.register();
         consoleOutput.info("Found PlaceholderAPI! Registered expansion.");
     }
@@ -75,6 +82,8 @@ public class MessagePlugin extends DevportPlugin {
     @Override
     public void onPluginDisable() {
         HandlerList.unregisterAll(this);
+        this.unregisterPlaceholders();
+
         this.userManager.save();
     }
 
