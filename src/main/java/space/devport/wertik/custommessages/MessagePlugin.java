@@ -2,6 +2,7 @@ package space.devport.wertik.custommessages;
 
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
@@ -26,6 +27,11 @@ public class MessagePlugin extends DevportPlugin {
 
     public static MessagePlugin getInstance() {
         return getPlugin(MessagePlugin.class);
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.YELLOW;
     }
 
     @Override

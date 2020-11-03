@@ -13,7 +13,7 @@ public class MessageLanguage extends LanguageDefaults {
     public void setDefaults() {
         addDefault("Commands.Invalid-Type", "&cType &f%param% &cis invalid.");
         addDefault("Commands.Invalid-Message", "&cMessage &f%param% &cis not valid in type &f%type%");
-        addDefault("Commands.Invalid-Player", "&cPlayer &f%player% &cis not online.");
+        addDefault("Commands.Invalid-Player", "&cPlayer &f%param% &cis not online.");
 
         addDefault("Commands.Set.Done", "&7Set message &f%message% &7in message type &f%type%");
         addDefault("Commands.Set.Done-Others", "&7Set message &f%message% &7in message type &f%type% &7for &f%player%");
