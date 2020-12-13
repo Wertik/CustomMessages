@@ -62,6 +62,7 @@ public class Listeners {
 
     @Nullable
     private String handle(@NotNull Player player, @NotNull MessageType type) {
-        return messageManager.getFormattedMessage(player, type);
+        String message = messageManager.getFormattedMessage(player, type);
+        return messageManager.getPosition().display(message);
     }
 }

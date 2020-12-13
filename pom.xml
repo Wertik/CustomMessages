@@ -6,7 +6,7 @@
 
     <groupId>space.devport.wertik.custommessages</groupId>
     <artifactId>CustomMessages</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 
     <name>CustomMessages</name>
 
@@ -49,6 +49,16 @@
                             <shadedPattern>${project.groupId}.utils</shadedPattern>
                         </relocation>
                     </relocations>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>space/devport/utils/xseries/XBiome*</exclude>
+                                <exclude>space/devport/utils/xseries/NMSExtras*</exclude>
+                                <exclude>space/devport/utils/xseries/NoteBlockMusic*</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
                 <executions>
                     <execution>
@@ -107,6 +117,12 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.10.9</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>7.7.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

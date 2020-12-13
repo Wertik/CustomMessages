@@ -1,12 +1,14 @@
 package space.devport.wertik.custommessages.system;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.text.message.Message;
 import space.devport.wertik.custommessages.MessagePlugin;
+import space.devport.wertik.custommessages.system.struct.MessagePosition;
 import space.devport.wertik.custommessages.system.struct.MessageStorage;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 import space.devport.wertik.custommessages.system.struct.User;
@@ -25,8 +27,15 @@ public class MessageManager {
 
     private Configuration messageConfiguration;
 
+    @Getter
+    private MessagePosition position;
+
     public MessageManager(MessagePlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void loadOptions() {
+        this.position = MessagePosition.fromString(plugin.getConfig().getString("message-position"), MessagePosition.TEXT);
     }
 
     /**

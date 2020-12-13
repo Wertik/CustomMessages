@@ -5,6 +5,21 @@
 plugin-prefix: '&eCustom Messages &8| '
 debug-enabled: false
 
+# ACTION_BAR, TITLE, TEXT
+# Titles support \n for subtitles.
+message-position: TEXT
+
+# Extra action bar settings
+action-bar:
+  duration: 20 # ticks
+
+# Extra title options
+# All in ticks
+title:
+  in: 20
+  stay: 40
+  out: 20
+
 # Configure the format for leave/join messages.
 # Remove format to disable.
 formats:

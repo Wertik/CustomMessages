@@ -40,6 +40,8 @@ public class MessagePlugin extends DevportPlugin {
         this.userManager = new UserManager(this);
 
         messageManager.load();
+        messageManager.loadOptions();
+
         userManager.load();
 
         setupPlaceholders();
@@ -59,9 +61,9 @@ public class MessagePlugin extends DevportPlugin {
 
         // Attempt to unregister expansion
         if (VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1 &&
-                this.placeholders.isRegistered()) {
+                placeholders.isRegistered()) {
 
-            this.placeholders.unregister();
+            placeholders.unregister();
             this.placeholders = null;
             consoleOutput.debug("Unregistered placeholder expansion.");
         }
@@ -72,24 +74,26 @@ public class MessagePlugin extends DevportPlugin {
             return;
         }
 
-        this.unregisterPlaceholders();
+        unregisterPlaceholders();
 
         this.placeholders = new MessagePlaceholders(this);
-        this.placeholders.register();
+        placeholders.register();
         consoleOutput.info("Found PlaceholderAPI! Registered expansion.");
     }
 
     @Override
     public void onPluginDisable() {
         HandlerList.unregisterAll(this);
-        this.unregisterPlaceholders();
+        unregisterPlaceholders();
 
-        this.userManager.save();
+        userManager.save();
     }
 
     @Override
     public void onReload() {
-        this.messageManager.load();
+        messageManager.load();
+        messageManager.loadOptions();
+
         setupPlaceholders();
     }
 
