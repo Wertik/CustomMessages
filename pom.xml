@@ -6,7 +6,7 @@
 
     <groupId>space.devport.wertik.custommessages</groupId>
     <artifactId>CustomMessages</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
 
     <name>CustomMessages</name>
 
@@ -34,7 +34,6 @@
                     <compilerVersion>1.8</compilerVersion>
                     <source>8</source>
                     <target>8</target>
-                    <release>8</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -91,7 +90,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -109,7 +108,7 @@
         <dependency>
             <groupId>space.devport.utils</groupId>
             <artifactId>DevportUtils</artifactId>
-            <version>LATEST</version>
+            <version>3.7.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -117,12 +116,6 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.10.9</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cryptomorin</groupId>
-            <artifactId>XSeries</artifactId>
-            <version>7.7.0</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
