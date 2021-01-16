@@ -22,7 +22,7 @@ public class MenuSubCommand extends MessageSubCommand {
     }
 
     @Override
-    protected CommandResult perform(CommandSender sender, String label, String[] args) {
+    protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
 
         MessageType type = CommandUtils.parseType(sender, args[0]);
 
@@ -42,7 +42,7 @@ public class MenuSubCommand extends MessageSubCommand {
             target = (Player) sender;
         }
 
-        new MessageMenu(target, type).open(target);
+        new MessageMenu(plugin, target, type).open(target);
         if (target != sender)
             plugin.getManager(LanguageManager.class).getPrefixed("Commands.Menu.Done-Others")
                     .replace("%type%", type.toString())

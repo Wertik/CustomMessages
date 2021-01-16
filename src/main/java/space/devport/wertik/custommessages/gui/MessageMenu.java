@@ -1,7 +1,9 @@
 package space.devport.wertik.custommessages.gui;
 
+import lombok.extern.java.Log;
 import org.bukkit.entity.Player;
 import space.devport.utils.CustomisationManager;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.menu.Menu;
 import space.devport.utils.menu.MenuBuilder;
 import space.devport.utils.menu.item.MatrixItem;
@@ -13,6 +15,7 @@ import space.devport.wertik.custommessages.system.struct.User;
 
 import java.util.List;
 
+@Log
 public class MessageMenu extends Menu {
 
     private final MessagePlugin plugin;
@@ -25,20 +28,20 @@ public class MessageMenu extends Menu {
 
     private int page;
 
-    public MessageMenu(Player player, MessageType type, int page) {
-        super("custommessages_preview");
+    public MessageMenu(MessagePlugin plugin, Player player, MessageType type, int page) {
+        super("custommessages_preview", plugin);
         this.player = player;
         this.type = type;
         this.plugin = MessagePlugin.getInstance();
 
         this.page = page;
-        this.slotsPerPage = countMatrixSlots(plugin.getManager(CustomisationManager.class).getMenuBuilder("message-overview").construct(), 'm');
+        this.slotsPerPage = countMatrixSlots(plugin.getManager(CustomisationManager.class).getMenu("message-overview").construct(), 'm');
 
         build();
     }
 
-    public MessageMenu(Player player, MessageType type) {
-        this(player, type, 1);
+    public MessageMenu(MessagePlugin plugin, Player player, MessageType type) {
+        this(plugin, player, type, 1);
     }
 
     private int countMatrixSlots(MenuBuilder menuBuilder, char character) {
@@ -55,7 +58,7 @@ public class MessageMenu extends Menu {
         User user = plugin.getUserManager().getOrCreateUser(player);
         String usedMessage = user.getMessage(type);
 
-        MenuBuilder menuBuilder = new MenuBuilder(plugin.getManager(CustomisationManager.class).getMenuBuilder("message-overview").construct());
+        MenuBuilder menuBuilder = plugin.getManager(CustomisationManager.class).getMenu("message-overview").construct();
 
         MatrixItem messageMatrix = menuBuilder.getMatrixItem('m');
         messageMatrix.clear();
@@ -77,7 +80,7 @@ public class MessageMenu extends Menu {
             String key = messages.get(i);
             MenuItem item = new MenuItem(usedMessage.equals(key) ? messageItemTaken : messageItem);
 
-            item.getItemBuilder().getPlaceholders()
+            item.getPrefab().getPlaceholders()
                     .add("%message_name%", key)
                     .add("%message_formatted%", plugin.getMessageManager().getFormattedMessage(player, type, key));
 
@@ -91,7 +94,7 @@ public class MessageMenu extends Menu {
         }
 
         for (MenuItem i : messageMatrix.getMenuItems()) {
-            plugin.getConsoleOutput().debug(i.getItemBuilder().getPlaceholders().getPlaceholderCache().toString());
+            log.log(DebugLevel.DEBUG, i.getPrefab().getPlaceholders().getPlaceholderCache().toString());
         }
 
         // Page control and close

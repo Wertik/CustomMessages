@@ -1,15 +1,17 @@
 package space.devport.wertik.custommessages.system.struct;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.text.message.Message;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Log
 public class MessageStorage {
 
     @Getter
@@ -40,7 +42,7 @@ public class MessageStorage {
         ConfigurationSection section = configuration.getFileConfiguration().getConfigurationSection(path);
 
         if (section == null) {
-            ConsoleOutput.getInstance().warn("Could not load messages from " + configuration.getFile().getName() + "@" + path + ", the section is invalid.");
+            log.warning("Could not load messages from " + configuration.getFile().getName() + "@" + path + ", the section is invalid.");
             return null;
         }
 
@@ -48,7 +50,7 @@ public class MessageStorage {
 
         for (String key : section.getKeys(false)) {
             storage.add(key, configuration.getMessage(section.getCurrentPath() + "." + key));
-            ConsoleOutput.getInstance().debug("Loaded message " + section.getCurrentPath() + "." + key);
+            log.log(DebugLevel.DEBUG, "Loaded message " + section.getCurrentPath() + "." + key);
         }
 
         return storage;

@@ -2,6 +2,7 @@ package space.devport.wertik.custommessages.system;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log
 public class MessageManager {
 
     private final MessagePlugin plugin;
@@ -70,7 +72,7 @@ public class MessageManager {
             }
         }
 
-        plugin.getConsoleOutput().info("Loaded " + this.loadedMessages.values().stream().map(m -> m.getMessages().values()).count() + " message(s)...");
+        log.info("Loaded " + this.loadedMessages.values().stream().map(m -> m.getMessages().values()).count() + " message(s)...");
     }
 
     @Nullable

@@ -10,8 +10,7 @@ public abstract class MessageSubCommand extends SubCommand {
     protected final MessagePlugin plugin;
 
     public MessageSubCommand(MessagePlugin plugin, String name) {
-        super(name);
-        setPermissions();
+        super(plugin, name);
         this.plugin = plugin;
     }
 

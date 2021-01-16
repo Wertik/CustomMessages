@@ -17,7 +17,7 @@ public class PreviewSubCommand extends MessageSubCommand {
     }
 
     @Override
-    protected CommandResult perform(CommandSender sender, String label, String[] args) {
+    protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
 
         MessageType type = CommandUtils.parseType(sender, args[0]);
 

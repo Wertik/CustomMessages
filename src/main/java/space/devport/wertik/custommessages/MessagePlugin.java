@@ -1,29 +1,32 @@
 package space.devport.wertik.custommessages;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.custommessages.commands.MessageCommand;
-import space.devport.wertik.custommessages.listeners.Listeners;
+import space.devport.wertik.custommessages.listeners.PlayerListener;
 import space.devport.wertik.custommessages.system.MessageManager;
 import space.devport.wertik.custommessages.system.UserManager;
 
+@Log
 public class MessagePlugin extends DevportPlugin {
 
     private MessagePlaceholders placeholders;
 
     @Getter
-    private MessageManager messageManager;
+    private MessageManager messageManager = new MessageManager(this);
 
     @Getter
-    private UserManager userManager;
+    private UserManager userManager = new UserManager(this);
 
     @Getter
-    private Listeners listeners;
+    private PlayerListener playerListener;
 
     public static MessagePlugin getInstance() {
         return getPlugin(MessagePlugin.class);
@@ -36,9 +39,6 @@ public class MessagePlugin extends DevportPlugin {
 
     @Override
     public void onPluginEnable() {
-        this.messageManager = new MessageManager(this);
-        this.userManager = new UserManager(this);
-
         messageManager.load();
         messageManager.loadOptions();
 
@@ -46,12 +46,12 @@ public class MessagePlugin extends DevportPlugin {
 
         setupPlaceholders();
 
-        this.listeners = new Listeners(this);
-        listeners.registerListeners();
+        this.playerListener = new PlayerListener(this);
+        playerListener.registerListeners();
 
-        new MessageLanguage(this);
+        new MessageLanguage(this).register();
 
-        addMainCommand(new MessageCommand(this));
+        registerMainCommand(new MessageCommand(this));
     }
 
     private void unregisterPlaceholders() {
@@ -65,7 +65,7 @@ public class MessagePlugin extends DevportPlugin {
 
             placeholders.unregister();
             this.placeholders = null;
-            consoleOutput.debug("Unregistered placeholder expansion.");
+            log.log(DebugLevel.DEBUG, "Unregistered placeholder expansion.");
         }
     }
 
@@ -78,7 +78,7 @@ public class MessagePlugin extends DevportPlugin {
 
         this.placeholders = new MessagePlaceholders(this);
         placeholders.register();
-        consoleOutput.info("Found PlaceholderAPI! Registered expansion.");
+        log.info("Found PlaceholderAPI! Registered expansion.");
     }
 
     @Override

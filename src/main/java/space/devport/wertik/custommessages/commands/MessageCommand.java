@@ -1,6 +1,7 @@
 package space.devport.wertik.custommessages.commands;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.wertik.custommessages.MessagePlugin;
@@ -12,16 +13,16 @@ import space.devport.wertik.custommessages.commands.subcommands.SetSubCommand;
 public class MessageCommand extends MainCommand {
 
     public MessageCommand(MessagePlugin plugin) {
-        super("custommessages");
+        super(plugin, "custommessages");
 
-        addSubCommand(new ReloadSubCommand(plugin));
-        addSubCommand(new SetSubCommand(plugin));
-        addSubCommand(new PreviewSubCommand(plugin));
-        addSubCommand(new MenuSubCommand(plugin));
+        withSubCommand(new ReloadSubCommand(plugin));
+        withSubCommand(new SetSubCommand(plugin));
+        withSubCommand(new PreviewSubCommand(plugin));
+        withSubCommand(new MenuSubCommand(plugin));
     }
 
     @Override
-    protected CommandResult perform(CommandSender sender, String label, String[] args) {
+    protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
         return super.perform(sender, label, args);
     }
 

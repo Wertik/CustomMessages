@@ -1,9 +1,9 @@
 package space.devport.wertik.custommessages.system;
 
+import lombok.extern.java.Log;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.utility.json.GsonHelper;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.struct.User;
@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
+@Log
 public class UserManager {
 
     private final MessagePlugin plugin;
@@ -61,9 +62,9 @@ public class UserManager {
             this.loadedUsers.clear();
             this.loadedUsers.putAll(users);
 
-            ConsoleOutput.getInstance().info("Loaded " + this.loadedUsers.size() + " user(s)...");
+            log.info("Loaded " + this.loadedUsers.size() + " user(s)...");
         }).exceptionally(e -> {
-            ConsoleOutput.getInstance().err("Could not load users: " + e.getMessage());
+            log.severe("Could not load users: " + e.getMessage());
             e.printStackTrace();
             return null;
         });
@@ -77,7 +78,7 @@ public class UserManager {
                 count++;
             }
         }
-        plugin.getConsoleOutput().info("Purged " + count + " empty account(s)...");
+        log.info("Purged " + count + " empty account(s)...");
     }
 
     public void save() {
@@ -86,9 +87,9 @@ public class UserManager {
         final Map<UUID, User> finalCache = new HashMap<>(this.loadedUsers);
 
         gsonHelper.save(finalCache, plugin.getDataFolder().getPath() + "/data.json").thenRunAsync(() -> {
-            ConsoleOutput.getInstance().info("Saved " + finalCache.size() + " user(s)...");
+            log.info("Saved " + finalCache.size() + " user(s)...");
         }).exceptionally(e -> {
-            ConsoleOutput.getInstance().err("Could not save users: " + e.getMessage());
+            log.severe("Could not save users: " + e.getMessage());
             e.printStackTrace();
             return null;
         });

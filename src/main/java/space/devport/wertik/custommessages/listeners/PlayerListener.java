@@ -1,5 +1,6 @@
 package space.devport.wertik.custommessages.listeners;
 
+import lombok.extern.java.Log;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,12 +16,13 @@ import space.devport.wertik.custommessages.system.struct.MessageType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Listeners {
+@Log
+public class PlayerListener {
 
     private final MessagePlugin plugin;
     private final MessageManager messageManager;
 
-    public Listeners(MessagePlugin plugin) {
+    public PlayerListener(MessagePlugin plugin) {
         this.plugin = plugin;
         this.messageManager = plugin.getMessageManager();
     }
@@ -52,7 +54,7 @@ public class Listeners {
             }
         });
 
-        plugin.getConsoleOutput().info("Registered " + this.registeredListeners.size() + " listener(s)...");
+        log.info("Registered " + this.registeredListeners.size() + " listener(s)...");
     }
 
     public void registerListener(MessageType type, Listener listener) {
