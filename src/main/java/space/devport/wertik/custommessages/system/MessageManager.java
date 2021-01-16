@@ -27,13 +27,14 @@ public class MessageManager {
 
     private final Map<MessageType, MessageStorage> loadedMessages = new HashMap<>();
 
-    private Configuration messageConfiguration;
+    private final Configuration messageConfiguration;
 
     @Getter
     private MessagePosition position;
 
     public MessageManager(MessagePlugin plugin) {
         this.plugin = plugin;
+        this.messageConfiguration = new Configuration(plugin, "messages");
     }
 
     public void loadOptions() {
@@ -49,10 +50,7 @@ public class MessageManager {
     }
 
     public void load() {
-        if (this.messageConfiguration == null)
-            messageConfiguration = new Configuration(plugin, "messages");
-        else
-            messageConfiguration.load();
+        messageConfiguration.load();
 
         for (MessageType type : MessageType.values()) {
             String typeName = type.toString().toLowerCase();
