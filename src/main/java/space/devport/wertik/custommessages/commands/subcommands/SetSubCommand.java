@@ -1,5 +1,6 @@
 package space.devport.wertik.custommessages.commands.subcommands;
 
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
@@ -10,17 +11,16 @@ import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
-import space.devport.wertik.custommessages.commands.CommandUtils;
+import space.devport.wertik.custommessages.commands.CommandParser;
 import space.devport.wertik.custommessages.commands.MessageSubCommand;
-import space.devport.wertik.custommessages.system.struct.MessageType;
-import space.devport.wertik.custommessages.system.struct.User;
+import space.devport.wertik.custommessages.system.message.type.MessageType;
+import space.devport.wertik.custommessages.system.user.User;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log
 public class SetSubCommand extends MessageSubCommand {
 
     public SetSubCommand(MessagePlugin plugin) {
@@ -29,7 +29,7 @@ public class SetSubCommand extends MessageSubCommand {
 
     @Override
     protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
-        MessageType type = CommandUtils.parseType(sender, args[0]);
+        MessageType type = plugin.getCommandParser().parseType(sender, args[0]);
 
         if (type == null) return CommandResult.FAILURE;
 
@@ -43,7 +43,7 @@ public class SetSubCommand extends MessageSubCommand {
 
         Player target;
         if (args.length > 2) {
-            target = CommandUtils.parsePlayer(sender, args[2]);
+            target = plugin.getCommandParser().parsePlayer(sender, args[2]);
 
             if (target == null) return CommandResult.FAILURE;
 
@@ -67,18 +67,18 @@ public class SetSubCommand extends MessageSubCommand {
 
     @Override
     public List<String> requestTabComplete(@NotNull CommandSender sender, String[] args) {
-        if (args.length == 0) {
-            return Arrays.stream(MessageType.values())
+        if (args.length == 1) {
+            return plugin.getMessageManager().getEnabledTypes().stream()
                     .map(t -> t.toString().toLowerCase())
                     .collect(Collectors.toList());
-        } else if (args.length == 1) {
+        } else if (args.length == 2) {
             MessageType type = ParseUtil.parseEnumHandled(args[0], MessageType.class, ExceptionCallback.IGNORE);
 
             if (type == null)
                 return Collections.emptyList();
 
             return plugin.getMessageManager().getMessages(type);
-        } else if (args.length == 2 && sender.hasPermission("custommmessages.set.others")) {
+        } else if (args.length == 3 && sender.hasPermission("custommmessages.set.others")) {
             return Bukkit.getOnlinePlayers().stream()
                     .map(HumanEntity::getName)
                     .collect(Collectors.toList());

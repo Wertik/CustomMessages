@@ -14,11 +14,8 @@ import space.devport.wertik.custommessages.commands.subcommands.MenuSubCommand;
 import space.devport.wertik.custommessages.commands.subcommands.PreviewSubCommand;
 import space.devport.wertik.custommessages.commands.subcommands.ReloadSubCommand;
 import space.devport.wertik.custommessages.commands.subcommands.SetSubCommand;
-import space.devport.wertik.custommessages.system.struct.MessageType;
-import space.devport.wertik.custommessages.system.struct.User;
-
-import java.util.ArrayList;
-import java.util.Collections;
+import space.devport.wertik.custommessages.system.message.type.MessageType;
+import space.devport.wertik.custommessages.system.user.User;
 
 public class MessageCommand extends MainCommand {
 
@@ -32,9 +29,9 @@ public class MessageCommand extends MainCommand {
         withSubCommand(new MenuSubCommand(plugin));
 
         withSubCommand(plugin.buildSubCommand("show")
-                .withRange(0, 1)
                 .withDefaultUsage("/%label% show (player)")
                 .withDefaultDescription("Show what messages the player has selected.")
+                .withRange(0, 1)
                 .withExecutor((sender, label, args) -> {
                     Message header = plugin.getManager(LanguageManager.class).get("Commands.Show.Header");
                     Message lineFormat = plugin.getManager(LanguageManager.class).get("Commands.Show.Line-Format");
@@ -52,13 +49,15 @@ public class MessageCommand extends MainCommand {
                     User user = plugin.getUserManager().getOrCreateUser(target);
 
                     for (MessageType type : plugin.getMessageManager().getEnabledTypes()) {
-                        header.append(lineFormat
-                                .replace("type", type.toString().toLowerCase())
-                                .replace("message", user.getMessage(type))
-                                .replace("preview", plugin.getMessageManager().getFormattedMessage(target, type)));
+                        header.append(lineFormat.clone()
+                                .replace("%type%", type.toString().toLowerCase())
+                                .replace("%message%", user.getMessage(type))
+                                .replace("%preview%", type.parseDefaults(plugin.getMessageManager().getFormattedMessage(target, type),
+                                        plugin.getCommandParser().obtainDefaults(type))));
                     }
 
-                    header.send(sender);
+                    header.replace("%player%", target.getName())
+                            .send(sender);
                     return CommandResult.SUCCESS;
                 }));
     }

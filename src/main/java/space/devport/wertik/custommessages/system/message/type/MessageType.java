@@ -1,7 +1,5 @@
-package space.devport.wertik.custommessages.system.struct;
+package space.devport.wertik.custommessages.system.message.type;
 
-import lombok.Getter;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import space.devport.utils.text.message.Message;
@@ -19,17 +17,33 @@ public enum MessageType {
             }
         }
         return message;
+    }, (message, defaults) -> {
+        if (defaults.length < 2)
+            return message;
+
+        return message.replaceAll("(?i)%killer%", defaults[0])
+                .replaceAll("(?i)%killerHealth%", defaults[1]);
     });
 
-    @Getter
     private final ExtraParser parser;
+
+    private final DefaultParser defaultParser;
 
     MessageType() {
         this.parser = null;
+        this.defaultParser = null;
     }
 
-    MessageType(ExtraParser parser) {
+    MessageType(ExtraParser parser, DefaultParser defaultParser) {
         this.parser = parser;
+        this.defaultParser = defaultParser;
+    }
+
+    public String parseDefaults(String message, String... defaults) {
+        if (!hasExtra() || defaults.length == 0)
+            return message;
+
+        return defaultParser.parse(message, defaults);
     }
 
     @Contract("!null,_ -> !null")
@@ -38,5 +52,9 @@ public enum MessageType {
             return message;
 
         return parser.parse(message, extra);
+    }
+
+    public boolean hasExtra() {
+        return parser != null && defaultParser != null;
     }
 }

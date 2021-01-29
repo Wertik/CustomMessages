@@ -1,4 +1,4 @@
-package space.devport.wertik.custommessages.system.struct;
+package space.devport.wertik.custommessages.system.message;
 
 import lombok.Getter;
 import lombok.extern.java.Log;

@@ -1,4 +1,4 @@
-package space.devport.wertik.custommessages.system;
+package space.devport.wertik.custommessages.system.user;
 
 import lombok.extern.java.Log;
 import org.bukkit.OfflinePlayer;
@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.utility.json.GsonHelper;
 import space.devport.wertik.custommessages.MessagePlugin;
-import space.devport.wertik.custommessages.system.struct.User;
+import space.devport.wertik.custommessages.system.user.User;
 
 import java.util.HashMap;
 import java.util.HashSet;

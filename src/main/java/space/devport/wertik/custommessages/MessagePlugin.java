@@ -10,10 +10,11 @@ import space.devport.utils.UsageFlag;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.VersionUtil;
+import space.devport.wertik.custommessages.commands.CommandParser;
 import space.devport.wertik.custommessages.commands.MessageCommand;
 import space.devport.wertik.custommessages.listeners.PlayerListener;
-import space.devport.wertik.custommessages.system.MessageManager;
-import space.devport.wertik.custommessages.system.UserManager;
+import space.devport.wertik.custommessages.system.message.MessageManager;
+import space.devport.wertik.custommessages.system.user.UserManager;
 
 @Log
 public class MessagePlugin extends DevportPlugin {
@@ -30,11 +31,16 @@ public class MessagePlugin extends DevportPlugin {
     @Getter
     private final PlayerListener playerListener = new PlayerListener(this);
 
+    @Getter
+    private CommandParser commandParser;
+
     private MessageExpansion expansion;
 
     @Override
     public void onPluginEnable() {
         MessagePlugin.instance = this;
+
+        this.commandParser = new CommandParser(this);
 
         messageManager.load();
         messageManager.loadOptions();

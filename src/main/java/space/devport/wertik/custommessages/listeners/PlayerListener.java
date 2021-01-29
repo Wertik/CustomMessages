@@ -12,10 +12,9 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.struct.Context;
 import space.devport.wertik.custommessages.MessagePlugin;
-import space.devport.wertik.custommessages.system.MessageManager;
-import space.devport.wertik.custommessages.system.struct.MessageType;
+import space.devport.wertik.custommessages.system.message.MessageManager;
+import space.devport.wertik.custommessages.system.message.type.MessageType;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.callbacks.ExceptionCallback;
 import space.devport.utils.utility.ParseUtil;
-import space.devport.wertik.custommessages.system.struct.MessageType;
+import space.devport.wertik.custommessages.system.message.type.MessageType;
 
 @RequiredArgsConstructor
 public class MessageExpansion extends PlaceholderExpansion {

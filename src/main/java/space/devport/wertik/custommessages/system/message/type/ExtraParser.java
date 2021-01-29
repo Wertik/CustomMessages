@@ -1,4 +1,4 @@
-package space.devport.wertik.custommessages.system.struct;
+package space.devport.wertik.custommessages.system.message.type;
 
 import space.devport.utils.text.message.Message;
 

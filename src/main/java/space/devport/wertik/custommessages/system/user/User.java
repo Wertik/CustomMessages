@@ -1,7 +1,8 @@
-package space.devport.wertik.custommessages.system.struct;
+package space.devport.wertik.custommessages.system.user;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import space.devport.wertik.custommessages.system.message.type.MessageType;
 
 import java.util.Collections;
 import java.util.HashMap;

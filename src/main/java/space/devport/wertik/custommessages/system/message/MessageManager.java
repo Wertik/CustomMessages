@@ -1,19 +1,17 @@
-package space.devport.wertik.custommessages.system;
+package space.devport.wertik.custommessages.system.message;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.text.message.Message;
 import space.devport.wertik.custommessages.MessagePlugin;
-import space.devport.wertik.custommessages.system.struct.MessagePosition;
-import space.devport.wertik.custommessages.system.struct.MessageStorage;
-import space.devport.wertik.custommessages.system.struct.MessageType;
-import space.devport.wertik.custommessages.system.struct.User;
+import space.devport.wertik.custommessages.util.MessageUtil;
+import space.devport.wertik.custommessages.system.message.type.MessageType;
+import space.devport.wertik.custommessages.system.user.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -115,8 +113,9 @@ public class MessageManager {
         return storage == null ? new ArrayList<>() : new ArrayList<>(storage.getMessages().keySet());
     }
 
+    // Everything's enabled by default.
     public boolean isEnabled(MessageType type) {
-        return plugin.getConfig().getBoolean(String.format("actions.%s", type.toString().toLowerCase()));
+        return plugin.getConfig().getBoolean(String.format("actions.%s", type.toString().toLowerCase()), true);
     }
 
     public Set<MessageType> getEnabledTypes() {

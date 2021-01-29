@@ -10,8 +10,8 @@ import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
 import space.devport.wertik.custommessages.MessagePlugin;
-import space.devport.wertik.custommessages.system.struct.MessageType;
-import space.devport.wertik.custommessages.system.struct.User;
+import space.devport.wertik.custommessages.system.message.type.MessageType;
+import space.devport.wertik.custommessages.system.user.User;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class MessageMenu extends Menu {
         this.plugin = MessagePlugin.getInstance();
 
         this.page = page;
-        this.slotsPerPage = countMatrixSlots(plugin.getManager(CustomisationManager.class).getMenu("message-overview").construct(), 'm');
+        this.slotsPerPage = countMatrixSlots(plugin.getManager(CustomisationManager.class).getMenu("message-overview").construct());
 
         build();
     }
@@ -44,11 +44,12 @@ public class MessageMenu extends Menu {
         this(plugin, player, type, 1);
     }
 
-    private int countMatrixSlots(MenuBuilder menuBuilder, char character) {
+    private int countMatrixSlots(MenuBuilder menuBuilder) {
         int count = 0;
         for (String line : menuBuilder.getBuildMatrix()) {
             for (char c : line.toCharArray())
-                if (c == character) count++;
+                if (c == 'm')
+                    count++;
         }
         return count;
     }

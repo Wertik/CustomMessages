@@ -1,4 +1,4 @@
-package space.devport.wertik.custommessages.system;
+package space.devport.wertik.custommessages.util;
 
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;
