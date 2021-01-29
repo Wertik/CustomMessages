@@ -11,7 +11,7 @@ import space.devport.wertik.custommessages.MessagePlugin;
 
 public enum MessagePosition {
 
-    TEXT(text -> text),
+    TEXT,
 
     TITLE(text -> {
         String[] arr = text.split("\n");
@@ -44,6 +44,10 @@ public enum MessagePosition {
 
     MessagePosition(MessageDisplay handler) {
         this.handler = handler;
+    }
+
+    MessagePosition() {
+        this.handler = text -> text;
     }
 
     private interface MessageDisplay {

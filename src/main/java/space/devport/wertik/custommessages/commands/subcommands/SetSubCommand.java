@@ -17,6 +17,7 @@ import space.devport.wertik.custommessages.system.struct.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,19 +66,24 @@ public class SetSubCommand extends MessageSubCommand {
     }
 
     @Override
-    public List<String> requestTabComplete(CommandSender sender, String[] args) {
+    public List<String> requestTabComplete(@NotNull CommandSender sender, String[] args) {
         if (args.length == 0) {
             return Arrays.stream(MessageType.values())
                     .map(t -> t.toString().toLowerCase())
                     .collect(Collectors.toList());
         } else if (args.length == 1) {
-            return plugin.getMessageManager().getMessages(ParseUtil.parseEnumHandled(args[0], MessageType.class, ExceptionCallback.IGNORE));
+            MessageType type = ParseUtil.parseEnumHandled(args[0], MessageType.class, ExceptionCallback.IGNORE);
+
+            if (type == null)
+                return Collections.emptyList();
+
+            return plugin.getMessageManager().getMessages(type);
         } else if (args.length == 2 && sender.hasPermission("custommmessages.set.others")) {
             return Bukkit.getOnlinePlayers().stream()
                     .map(HumanEntity::getName)
                     .collect(Collectors.toList());
         }
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     @Override

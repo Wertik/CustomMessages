@@ -34,7 +34,7 @@ public enum MessageType {
 
     @Contract("!null,_ -> !null")
     public Message parseExtra(Message message, Object[] extra) {
-        if (parser == null)
+        if (parser == null || extra.length == 0)
             return message;
 
         return parser.parse(message, extra);

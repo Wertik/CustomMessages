@@ -21,5 +21,8 @@ public class MessageLanguage extends LanguageDefaults {
         addDefault("Commands.Preview.Done", "&7Preview: &f'%message%&f'");
 
         addDefault("Commands.Menu.Done-Others", "&7Opened &f%type% &7message menu for &f%player%");
+
+        addDefault("Commands.Show.Header", "&7Messages of &f%player%&7's");
+        addDefault("Commands.Show.Line-Format", "&f%type% &8- &e%message%");
     }
 }

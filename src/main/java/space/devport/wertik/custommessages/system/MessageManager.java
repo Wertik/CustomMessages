@@ -3,6 +3,7 @@ package space.devport.wertik.custommessages.system;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.java.Log;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ import space.devport.wertik.custommessages.system.struct.MessageType;
 import space.devport.wertik.custommessages.system.struct.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log
 public class MessageManager {
@@ -70,7 +72,7 @@ public class MessageManager {
     }
 
     @Nullable
-    public String getFormattedMessage(@Nullable Player player, @NotNull MessageType type, @Nullable String messageName, Object... extra) {
+    public String getFormattedMessage(@Nullable OfflinePlayer player, @NotNull MessageType type, @Nullable String messageName, Object... extra) {
 
         MessageStorage storage = getStorage(type);
 
@@ -98,7 +100,12 @@ public class MessageManager {
     }
 
     @Nullable
-    public String getFormattedMessage(Player player, MessageType type, Object... extra) {
+    public String getFormattedMessage(OfflinePlayer player, MessageType type) {
+        return getFormattedMessage(player, type, new Object[0]);
+    }
+
+    @Nullable
+    public String getFormattedMessage(OfflinePlayer player, MessageType type, Object... extra) {
         User user = plugin.getUserManager().getOrCreateUser(player);
         return getFormattedMessage(player, type, user.getMessage(type), extra);
     }
@@ -110,6 +117,12 @@ public class MessageManager {
 
     public boolean isEnabled(MessageType type) {
         return plugin.getConfig().getBoolean(String.format("actions.%s", type.toString().toLowerCase()));
+    }
+
+    public Set<MessageType> getEnabledTypes() {
+        return Arrays.stream(MessageType.values())
+                .filter(this::isEnabled)
+                .collect(Collectors.toSet());
     }
 
     public Map<MessageType, MessageStorage> getLoadedMessages() {
