@@ -54,7 +54,6 @@ public class MessageMenu extends Menu {
     }
 
     private void build() {
-
         User user = plugin.getUserManager().getOrCreateUser(player);
         String usedMessage = user.getMessage(type);
 

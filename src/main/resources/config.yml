@@ -20,8 +20,9 @@ title:
   stay: 40
   out: 20
 
-# Configure the format for leave/join messages.
+# Configure the format for leave/join/kill messages.
 # Remove format to disable.
 formats:
-  join: '&a+ &7%message%'
-  leave: '&c- &7%message%'
+  join: '&8[&a+&8] &7%message%'
+  leave: '&8[&c-&8] &7%message%'
+  kill: '&8[&4X&8] %message%'

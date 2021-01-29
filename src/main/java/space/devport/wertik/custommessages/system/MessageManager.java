@@ -74,7 +74,7 @@ public class MessageManager {
     }
 
     @Nullable
-    public String getFormattedMessage(@Nullable Player player, @NotNull MessageType type, @Nullable String messageName) {
+    public String getFormattedMessage(@Nullable Player player, @NotNull MessageType type, @Nullable String messageName, Object... extra) {
 
         MessageStorage storage = getStorage(type);
 
@@ -94,15 +94,17 @@ public class MessageManager {
         if (message == null || message.isEmpty())
             return null;
 
+        message = type.parseExtra(message, extra);
+
         format = format.replaceAll("(?i)%message%", message.toString());
 
         return MessageUtil.formatMessage(format, player);
     }
 
     @Nullable
-    public String getFormattedMessage(Player player, MessageType type) {
+    public String getFormattedMessage(Player player, MessageType type, Object... extra) {
         User user = plugin.getUserManager().getOrCreateUser(player);
-        return getFormattedMessage(player, type, user.getMessage(type));
+        return getFormattedMessage(player, type, user.getMessage(type), extra);
     }
 
     public List<String> getMessages(MessageType type) {

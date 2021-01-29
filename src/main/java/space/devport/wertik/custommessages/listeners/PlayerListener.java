@@ -4,11 +4,13 @@ import lombok.extern.java.Log;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.struct.Context;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.MessageManager;
 import space.devport.wertik.custommessages.system.struct.MessageType;
@@ -54,6 +56,19 @@ public class PlayerListener {
             }
         });
 
+        registerListener(MessageType.KILL, new Listener() {
+            @EventHandler
+            public void onKill(PlayerDeathEvent event) {
+                Player player = event.getEntity();
+                Player killer = event.getEntity().getKiller();
+
+                if (killer == null)
+                    return;
+
+                event.setDeathMessage(handle(player, MessageType.KILL, killer));
+            }
+        });
+
         log.info("Registered " + this.registeredListeners.size() + " listener(s)...");
     }
 
@@ -63,8 +78,8 @@ public class PlayerListener {
     }
 
     @Nullable
-    private String handle(@NotNull Player player, @NotNull MessageType type) {
-        String message = messageManager.getFormattedMessage(player, type);
+    private String handle(@NotNull Player player, @NotNull MessageType type, Object... extra) {
+        String message = messageManager.getFormattedMessage(player, type, extra);
         return messageManager.getPosition().display(message);
     }
 }
