@@ -20,8 +20,14 @@ title:
   stay: 40
   out: 20
 
+# Enable which actions' messages should he handled by the plugin.
+actions:
+  join: true
+  leave: true
+  kill: true
+
 # Configure the format for leave/join/kill messages.
-# Remove format to disable.
+# Remove format to disable the message.
 formats:
   join: '&8[&a+&8] &7%message%'
   leave: '&8[&c-&8] &7%message%'

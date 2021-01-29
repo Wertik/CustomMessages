@@ -6,7 +6,7 @@
 
     <groupId>space.devport.wertik.custommessages</groupId>
     <artifactId>CustomMessages</artifactId>
-    <version>1.2.3</version>
+    <version>1.3.0-SNAPSHOT</version>
 
     <name>CustomMessages</name>
 
@@ -90,7 +90,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

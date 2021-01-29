@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.callbacks.ExceptionCallback;
+import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 
 @RequiredArgsConstructor
@@ -12,29 +14,30 @@ public class MessagePlaceholders extends PlaceholderExpansion {
     private final MessagePlugin plugin;
 
     /*
-     * %custommessages_message_(formatted)%
+     * %custommessages_<type>_(formatted)%
      * */
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
 
-        if (player == null) return "no_player";
+        if (player == null)
+            return "no-player";
 
         String[] args = params.split("_");
 
-        if (args.length < 2) return "not_enough_params";
+        if (args.length < 1)
+            return "not-enough-params";
 
-        MessageType type = MessageType.fromString(args[0]);
+        MessageType type = ParseUtil.parseEnumHandled(args[0], MessageType.class, ExceptionCallback.IGNORE);
 
-        if (type == null) return "invalid_type";
+        if (type == null)
+            return "invalid-type";
 
-        if (args[0].toLowerCase().equals("message")) {
-            if (args.length < 3)
-                return plugin.getUserManager().getOrCreateUser(player).getMessage(type);
+        if (args.length < 2)
+            return plugin.getUserManager().getOrCreateUser(player).getMessage(type);
 
-            if (args[2].equalsIgnoreCase("formatted")) {
-                String msg = plugin.getMessageManager().getFormattedMessage(player, type);
-                return msg != null ? msg : "none";
-            }
+        if (args[1].equalsIgnoreCase("formatted")) {
+            String msg = plugin.getMessageManager().getFormattedMessage(player, type);
+            return msg != null ? msg : "none";
         }
 
         return "invalid_params";

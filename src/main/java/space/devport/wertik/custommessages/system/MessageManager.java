@@ -14,11 +14,7 @@ import space.devport.wertik.custommessages.system.struct.MessageStorage;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 import space.devport.wertik.custommessages.system.struct.User;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log
 public class MessageManager {
@@ -61,7 +57,7 @@ public class MessageManager {
                 if (Strings.isNullOrEmpty(format))
                     continue;
 
-                MessageStorage storage = MessageStorage.from(messageConfiguration, typeName, format);
+                MessageStorage storage = MessageStorage.load(messageConfiguration, typeName, format);
 
                 if (storage == null)
                     continue;
@@ -94,7 +90,7 @@ public class MessageManager {
         if (message == null || message.isEmpty())
             return null;
 
-        message = type.parseExtra(message, extra);
+        message = type.parseExtra(message.clone(), extra);
 
         format = format.replaceAll("(?i)%message%", message.toString());
 
@@ -110,6 +106,10 @@ public class MessageManager {
     public List<String> getMessages(MessageType type) {
         MessageStorage storage = this.loadedMessages.get(type);
         return storage == null ? new ArrayList<>() : new ArrayList<>(storage.getMessages().keySet());
+    }
+
+    public boolean isEnabled(MessageType type) {
+        return plugin.getConfig().getBoolean(String.format("actions.%s", type.toString().toLowerCase()));
     }
 
     public Map<MessageType, MessageStorage> getLoadedMessages() {

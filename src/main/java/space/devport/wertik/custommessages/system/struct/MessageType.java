@@ -1,6 +1,7 @@
 package space.devport.wertik.custommessages.system.struct;
 
 import lombok.Getter;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import space.devport.utils.text.message.Message;
@@ -13,9 +14,8 @@ public enum MessageType {
         for (Object obj : extra) {
             if (obj instanceof Player) {
                 Player player = (Player) obj;
-                message.getPlaceholders()
-                        .add("killer", player.getName())
-                        .add("killerHealth", player.getHealth());
+                message.replace("%killer%", player.getName())
+                        .replace("%killerHealth%", player.getHealth());
             }
         }
         return message;

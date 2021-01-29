@@ -5,9 +5,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.callbacks.ExceptionCallback;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.commands.struct.Preconditions;
+import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.commands.CommandUtils;
 import space.devport.wertik.custommessages.commands.MessageSubCommand;
@@ -26,7 +27,7 @@ public class SetSubCommand extends MessageSubCommand {
     }
 
     @Override
-    protected CommandResult perform(CommandSender sender, String label, String[] args) {
+    protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
         MessageType type = CommandUtils.parseType(sender, args[0]);
 
         if (type == null) return CommandResult.FAILURE;
@@ -70,7 +71,7 @@ public class SetSubCommand extends MessageSubCommand {
                     .map(t -> t.toString().toLowerCase())
                     .collect(Collectors.toList());
         } else if (args.length == 1) {
-            return plugin.getMessageManager().getMessages(MessageType.fromString(args[0]));
+            return plugin.getMessageManager().getMessages(ParseUtil.parseEnumHandled(args[0], MessageType.class, ExceptionCallback.IGNORE));
         } else if (args.length == 2 && sender.hasPermission("custommmessages.set.others")) {
             return Bukkit.getOnlinePlayers().stream()
                     .map(HumanEntity::getName)

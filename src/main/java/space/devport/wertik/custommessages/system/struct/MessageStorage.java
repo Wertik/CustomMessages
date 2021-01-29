@@ -37,7 +37,7 @@ public class MessageStorage {
     }
 
     @Nullable
-    public static MessageStorage from(Configuration configuration, String path, String format) {
+    public static MessageStorage load(Configuration configuration, String path, String format) {
 
         ConfigurationSection section = configuration.getFileConfiguration().getConfigurationSection(path);
 

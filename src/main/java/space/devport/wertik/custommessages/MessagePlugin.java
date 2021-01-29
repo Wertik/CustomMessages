@@ -17,16 +17,16 @@ import space.devport.wertik.custommessages.system.UserManager;
 @Log
 public class MessagePlugin extends DevportPlugin {
 
+    @Getter
+    private final MessageManager messageManager = new MessageManager(this);
+
+    @Getter
+    private final UserManager userManager = new UserManager(this);
+
+    @Getter
+    private final PlayerListener playerListener = new PlayerListener(this);
+
     private MessagePlaceholders placeholders;
-
-    @Getter
-    private MessageManager messageManager = new MessageManager(this);
-
-    @Getter
-    private UserManager userManager = new UserManager(this);
-
-    @Getter
-    private PlayerListener playerListener;
 
     public static MessagePlugin getInstance() {
         return getPlugin(MessagePlugin.class);
@@ -44,14 +44,13 @@ public class MessagePlugin extends DevportPlugin {
 
         userManager.load();
 
-        setupPlaceholders();
-
-        this.playerListener = new PlayerListener(this);
         playerListener.registerListeners();
 
         new MessageLanguage(this).register();
 
         registerMainCommand(new MessageCommand(this));
+
+        setupPlaceholders();
     }
 
     private void unregisterPlaceholders() {
@@ -91,8 +90,12 @@ public class MessagePlugin extends DevportPlugin {
 
     @Override
     public void onReload() {
+        playerListener.unregisterAll();
+
         messageManager.load();
         messageManager.loadOptions();
+
+        playerListener.registerListeners();
 
         setupPlaceholders();
     }
