@@ -9,7 +9,7 @@ import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.custommessages.system.struct.MessageType;
 
 @RequiredArgsConstructor
-public class MessagePlaceholders extends PlaceholderExpansion {
+public class MessageExpansion extends PlaceholderExpansion {
 
     private final MessagePlugin plugin;
 

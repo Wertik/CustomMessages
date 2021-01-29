@@ -8,6 +8,7 @@ import org.bukkit.event.HandlerList;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.utils.logging.DebugLevel;
+import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.custommessages.commands.MessageCommand;
 import space.devport.wertik.custommessages.listeners.PlayerListener;
@@ -18,6 +19,9 @@ import space.devport.wertik.custommessages.system.UserManager;
 public class MessagePlugin extends DevportPlugin {
 
     @Getter
+    private static MessagePlugin instance;
+
+    @Getter
     private final MessageManager messageManager = new MessageManager(this);
 
     @Getter
@@ -26,19 +30,12 @@ public class MessagePlugin extends DevportPlugin {
     @Getter
     private final PlayerListener playerListener = new PlayerListener(this);
 
-    private MessagePlaceholders placeholders;
-
-    public static MessagePlugin getInstance() {
-        return getPlugin(MessagePlugin.class);
-    }
-
-    @Override
-    public ChatColor getColor() {
-        return ChatColor.YELLOW;
-    }
+    private MessageExpansion expansion;
 
     @Override
     public void onPluginEnable() {
+        MessagePlugin.instance = this;
+
         messageManager.load();
         messageManager.loadOptions();
 
@@ -50,34 +47,34 @@ public class MessagePlugin extends DevportPlugin {
 
         registerMainCommand(new MessageCommand(this));
 
-        setupPlaceholders();
+        registerPlaceholders();
     }
 
     private void unregisterPlaceholders() {
 
-        if (this.placeholders == null)
+        if (this.expansion == null)
             return;
 
         // Attempt to unregister expansion
         if (VersionUtil.compareVersions("2.10.9", PlaceholderAPIPlugin.getInstance().getDescription().getVersion()) > -1 &&
-                placeholders.isRegistered()) {
+                expansion.isRegistered()) {
 
-            placeholders.unregister();
-            this.placeholders = null;
+            expansion.unregister();
+            this.expansion = null;
             log.log(DebugLevel.DEBUG, "Unregistered placeholder expansion.");
         }
     }
 
-    private void setupPlaceholders() {
-        if (!getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+    private void registerPlaceholders() {
+
+        if (!DependencyUtil.isEnabled("PlaceholderAPI"))
             return;
-        }
 
         unregisterPlaceholders();
 
-        this.placeholders = new MessagePlaceholders(this);
-        placeholders.register();
-        log.info("Found PlaceholderAPI! Registered expansion.");
+        this.expansion = new MessageExpansion(this);
+        expansion.register();
+        log.info("Found PlaceholderAPI! &aRegistered expansion.");
     }
 
     @Override
@@ -97,7 +94,12 @@ public class MessagePlugin extends DevportPlugin {
 
         playerListener.registerListeners();
 
-        setupPlaceholders();
+        registerPlaceholders();
+    }
+
+    @Override
+    public ChatColor getColor() {
+        return ChatColor.YELLOW;
     }
 
     @Override
