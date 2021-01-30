@@ -104,8 +104,10 @@ public class MessageManager {
 
     @Nullable
     public String getFormattedMessage(OfflinePlayer player, MessageType type, Object... extra) {
-        User user = plugin.getUserManager().getOrCreateUser(player);
-        return getFormattedMessage(player, type, user.getMessage(type), extra);
+        User user = plugin.getUserManager().getUser(player);
+        if (user == null)
+            plugin.getUserManager().loadUser(player.getUniqueId());
+        return getFormattedMessage(player, type, user == null ? "default" : user.getMessage(type), extra);
     }
 
     public List<String> getMessages(MessageType type) {

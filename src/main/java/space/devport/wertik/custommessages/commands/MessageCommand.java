@@ -15,7 +15,6 @@ import space.devport.wertik.custommessages.commands.subcommands.PreviewSubComman
 import space.devport.wertik.custommessages.commands.subcommands.ReloadSubCommand;
 import space.devport.wertik.custommessages.commands.subcommands.SetSubCommand;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
-import space.devport.wertik.custommessages.system.user.User;
 
 public class MessageCommand extends MainCommand {
 
@@ -46,18 +45,19 @@ public class MessageCommand extends MainCommand {
                         target = (Player) sender;
                     }
 
-                    User user = plugin.getUserManager().getOrCreateUser(target);
+                    plugin.getUserManager().getOrCreateUser(target)
+                            .thenAcceptAsync(user -> {
+                                for (MessageType type : plugin.getMessageManager().getEnabledTypes()) {
+                                    header.append(lineFormat.clone()
+                                            .replace("%type%", type.toString().toLowerCase())
+                                            .replace("%message%", user.getMessage(type))
+                                            .replace("%preview%", type.parseDefaults(plugin.getMessageManager().getFormattedMessage(target, type),
+                                                    plugin.getCommandParser().obtainDefaults(type))));
+                                }
 
-                    for (MessageType type : plugin.getMessageManager().getEnabledTypes()) {
-                        header.append(lineFormat.clone()
-                                .replace("%type%", type.toString().toLowerCase())
-                                .replace("%message%", user.getMessage(type))
-                                .replace("%preview%", type.parseDefaults(plugin.getMessageManager().getFormattedMessage(target, type),
-                                        plugin.getCommandParser().obtainDefaults(type))));
-                    }
-
-                    header.replace("%player%", target.getName())
-                            .send(sender);
+                                header.replace("%player%", target.getName())
+                                        .send(sender);
+                            });
                     return CommandResult.SUCCESS;
                 }));
     }

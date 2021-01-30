@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.utils.callbacks.ExceptionCallback;
 import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
+import space.devport.wertik.custommessages.system.user.User;
 
 @RequiredArgsConstructor
 public class MessageExpansion extends PlaceholderExpansion {
@@ -32,8 +33,15 @@ public class MessageExpansion extends PlaceholderExpansion {
         if (type == null)
             return "invalid-type";
 
+        User user = plugin.getUserManager().getUser(player);
+
+        if (user == null) {
+            plugin.getUserManager().getOrLoadUser(player.getUniqueId());
+            return "no-record";
+        }
+
         if (args.length < 2)
-            return plugin.getUserManager().getOrCreateUser(player).getMessage(type);
+            return user.getMessage(type);
 
         if (args[1].equalsIgnoreCase("formatted")) {
             String msg = plugin.getMessageManager().getFormattedMessage(player, type);

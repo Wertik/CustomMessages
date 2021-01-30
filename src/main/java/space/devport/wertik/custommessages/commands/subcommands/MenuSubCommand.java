@@ -47,7 +47,7 @@ public class MenuSubCommand extends MessageSubCommand {
             target = (Player) sender;
         }
 
-        new MessageMenu(plugin, target, type).open(target);
+        new MessageMenu(plugin, target, type);
         if (target != sender)
             plugin.getManager(LanguageManager.class).getPrefixed("Commands.Menu.Done-Others")
                     .replace("%type%", type.toString())

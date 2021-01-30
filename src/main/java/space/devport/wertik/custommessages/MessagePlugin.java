@@ -12,6 +12,7 @@ import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.VersionUtil;
 import space.devport.wertik.custommessages.commands.CommandParser;
 import space.devport.wertik.custommessages.commands.MessageCommand;
+import space.devport.wertik.custommessages.listeners.ListenerRegistry;
 import space.devport.wertik.custommessages.listeners.PlayerListener;
 import space.devport.wertik.custommessages.system.message.MessageManager;
 import space.devport.wertik.custommessages.system.user.UserManager;
@@ -32,7 +33,7 @@ public class MessagePlugin extends DevportPlugin {
     private final UserManager userManager = new UserManager(this);
 
     @Getter
-    private final PlayerListener playerListener = new PlayerListener(this);
+    private final ListenerRegistry listenerRegistry = new ListenerRegistry(this);
 
     @Getter
     private CommandParser commandParser;
@@ -54,11 +55,12 @@ public class MessagePlugin extends DevportPlugin {
         loadOptions();
 
         new MessageLanguage(this).register();
+        addListener(new PlayerListener(this));
 
         userManager.initializeStorage().thenRun(() -> {
             userManager.load();
 
-            playerListener.registerListeners();
+            listenerRegistry.registerListeners();
 
             registerMainCommand(new MessageCommand(this));
 
@@ -107,17 +109,25 @@ public class MessagePlugin extends DevportPlugin {
 
     @Override
     public void onReload() {
-        playerListener.unregisterAll();
-        userManager.save();
+        listenerRegistry.unregisterAll();
+
+        commandParser.emptyCache();
 
         loadOptions();
 
         messageManager.load();
         messageManager.loadOptions();
 
-        playerListener.registerListeners();
-
-        commandParser.emptyCache();
+        // Reload the storage when a type change occurs.
+        if (userManager.loadStorageType() != userManager.getStorageType()) {
+            userManager.save().thenRun(() ->
+                    userManager.initializeStorage().thenRun(() -> {
+                        userManager.load();
+                        listenerRegistry.registerListeners();
+                    }));
+        } else {
+            listenerRegistry.registerListeners();
+        }
 
         registerPlaceholders();
     }

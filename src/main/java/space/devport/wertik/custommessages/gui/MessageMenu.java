@@ -37,7 +37,7 @@ public class MessageMenu extends Menu {
         this.page = page;
         this.slotsPerPage = countMatrixSlots(plugin.getManager(CustomisationManager.class).getMenu("message-overview").construct());
 
-        build();
+        open();
     }
 
     public MessageMenu(MessagePlugin plugin, Player player, MessageType type) {
@@ -54,73 +54,75 @@ public class MessageMenu extends Menu {
         return count;
     }
 
-    private void build() {
-        User user = plugin.getUserManager().getOrCreateUser(player);
-        String usedMessage = user.getMessage(type);
+    private void open() {
+        plugin.getUserManager().getOrCreateUser(player).thenAcceptAsync(user -> {
+            String usedMessage = user.getMessage(type);
 
-        MenuBuilder menuBuilder = plugin.getManager(CustomisationManager.class).getMenu("message-overview").construct();
+            MenuBuilder menuBuilder = plugin.getManager(CustomisationManager.class).getMenu("message-overview").construct();
 
-        MatrixItem messageMatrix = menuBuilder.getMatrixItem('m');
-        messageMatrix.clear();
+            MatrixItem messageMatrix = menuBuilder.getMatrixItem('m');
+            messageMatrix.clear();
 
-        MenuItem messageItem = new MenuItem(menuBuilder.getItem("message-item"));
-        MenuItem messageItemTaken = new MenuItem(menuBuilder.getItem("message-item-taken"));
+            MenuItem messageItem = new MenuItem(menuBuilder.getItem("message-item"));
+            MenuItem messageItemTaken = new MenuItem(menuBuilder.getItem("message-item-taken"));
 
-        Placeholders placeholders = new Placeholders()
-                .add("%type%", type.toString().toLowerCase())
-                .add("%player%", player.getName())
-                .add("%message_used%", usedMessage);
+            Placeholders placeholders = new Placeholders()
+                    .add("%type%", type.toString().toLowerCase())
+                    .add("%player%", player.getName())
+                    .add("%message_used%", usedMessage);
 
-        menuBuilder.getTitle().parseWith(placeholders);
+            menuBuilder.getTitle().parseWith(placeholders);
 
-        List<String> messages = plugin.getMessageManager().getMessages(type);
+            List<String> messages = plugin.getMessageManager().getMessages(type);
 
-        for (int i = (this.page - 1) * slotsPerPage; i < messages.size() && i < slotsPerPage * this.page; i++) {
+            for (int i = (this.page - 1) * slotsPerPage; i < messages.size() && i < slotsPerPage * this.page; i++) {
 
-            String key = messages.get(i);
-            MenuItem item = new MenuItem(usedMessage.equals(key) ? messageItemTaken : messageItem);
+                String key = messages.get(i);
+                MenuItem item = new MenuItem(usedMessage.equals(key) ? messageItemTaken : messageItem);
 
-            item.getPrefab().getPlaceholders()
-                    .add("%message_name%", key)
-                    .add("%message_formatted%", plugin.getMessageManager().getFormattedMessage(player, type, key));
+                item.getPrefab().getPlaceholders()
+                        .add("%message_name%", key)
+                        .add("%message_formatted%", plugin.getMessageManager().getFormattedMessage(player, type, key));
 
-            item.setClickAction((itemClick) -> {
-                user.setMessage(type, key);
-                build();
-                reload();
-            });
+                item.setClickAction((itemClick) -> {
+                    user.setMessage(type, key);
+                    open();
+                    reload();
+                });
 
-            messageMatrix.addItem(item);
-        }
+                messageMatrix.addItem(item);
+            }
 
-        for (MenuItem i : messageMatrix.getMenuItems()) {
-            log.log(DebugLevel.DEBUG, i.getPrefab().getPlaceholders().getPlaceholderCache().toString());
-        }
+            for (MenuItem i : messageMatrix.getMenuItems()) {
+                log.log(DebugLevel.DEBUG, i.getPrefab().getPlaceholders().getPlaceholderCache().toString());
+            }
 
-        // Page control and close
+            // Page control and close
 
-        if (menuBuilder.getItem("close") != null)
-            menuBuilder.getItem("close").setClickAction((itemClick -> close()));
+            if (menuBuilder.getItem("close") != null)
+                menuBuilder.getItem("close").setClickAction((itemClick -> close()));
 
-        if (this.page < this.maxPage() && menuBuilder.getItem("page-next") != null)
-            menuBuilder.getMatrixItem('n').getItem("page-next").setClickAction(itemClick -> {
-                incPage();
-                build();
-                reload();
-            });
-        else
-            menuBuilder.removeMatrixItem('n');
+            if (this.page < this.maxPage() && menuBuilder.getItem("page-next") != null)
+                menuBuilder.getMatrixItem('n').getItem("page-next").setClickAction(itemClick -> {
+                    incPage();
+                    open();
+                    reload();
+                });
+            else
+                menuBuilder.removeMatrixItem('n');
 
-        if (this.page > 1 && menuBuilder.getItem("page-previous") != null)
-            menuBuilder.getMatrixItem('p').getItem("page-previous").setClickAction(itemClick -> {
-                decPage();
-                build();
-                reload();
-            });
-        else
-            menuBuilder.removeMatrixItem('p');
+            if (this.page > 1 && menuBuilder.getItem("page-previous") != null)
+                menuBuilder.getMatrixItem('p').getItem("page-previous").setClickAction(itemClick -> {
+                    decPage();
+                    open();
+                    reload();
+                });
+            else
+                menuBuilder.removeMatrixItem('p');
 
-        setMenuBuilder(menuBuilder.construct());
+            setMenuBuilder(menuBuilder.construct());
+            open(player);
+        });
     }
 
     private int maxPage() {

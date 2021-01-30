@@ -54,14 +54,15 @@ public class SetSubCommand extends MessageSubCommand {
             target = (Player) sender;
         }
 
-        User user = plugin.getUserManager().getOrCreateUser(target);
-        user.setMessage(type, args[1]);
+        plugin.getUserManager().getOrCreateUser(target).thenAcceptAsync(user -> {
+            user.setMessage(type, args[1]);
 
-        language.getPrefixed(target == sender ? "Commands.Set.Done" : "Commands.Set.Done-Others")
-                .replace("%type%", type.toString().toLowerCase())
-                .replace("%message%", args[1])
-                .replace("%player%", target == sender ? "you" : target.getName())
-                .send(sender);
+            language.getPrefixed(target == sender ? "Commands.Set.Done" : "Commands.Set.Done-Others")
+                    .replace("%type%", type.toString().toLowerCase())
+                    .replace("%message%", args[1])
+                    .replace("%player%", target == sender ? "you" : target.getName())
+                    .send(sender);
+        });
         return CommandResult.SUCCESS;
     }
 

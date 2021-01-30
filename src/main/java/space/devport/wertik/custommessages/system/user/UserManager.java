@@ -1,14 +1,18 @@
 package space.devport.wertik.custommessages.system.user;
 
+import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.callbacks.ExceptionCallback;
 import space.devport.utils.utility.ParseUtil;
+import space.devport.utils.utility.ThreadUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.storage.IStorage;
+import space.devport.wertik.custommessages.storage.LoadCache;
 import space.devport.wertik.custommessages.storage.StorageType;
 import space.devport.wertik.custommessages.storage.json.JsonStorage;
 import space.devport.wertik.custommessages.storage.mysql.ConnectionInfo;
@@ -26,25 +30,57 @@ public class UserManager {
 
     private final MessagePlugin plugin;
 
+    private final LoadCache<UUID, User> loadCache = new LoadCache<>();
+
     private final Map<UUID, User> loadedUsers = new ConcurrentHashMap<>();
+
+    @Getter
+    private StorageType storageType;
 
     private IStorage storage;
 
     private int errThreshold;
 
+    private Thread autoSave;
+
     public UserManager(MessagePlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void stopAutoSave() {
+        if (autoSave == null)
+            return;
+
+        autoSave.interrupt();
+        this.autoSave = null;
+    }
+
+    public void startAutoSave() {
+        stopAutoSave();
+
+        if (!plugin.getConfig().getBoolean("auto-save.enabled", false))
+            return;
+
+        this.autoSave = ThreadUtil.createDelayedRepeatingTask(this::save,
+                plugin.getConfig().getInt("auto-save.interval", 300),
+                "Messages Auto Save");
+
+        autoSave.start();
     }
 
     public CompletableFuture<Void> initializeStorage() {
         return initializeStorage(null);
     }
 
+    public StorageType loadStorageType() {
+        return ParseUtil.parseEnumHandled(plugin.getConfiguration().getString("storage.type", "json"), StorageType.class, StorageType.JSON, ExceptionCallback.IGNORE);
+    }
+
     public CompletableFuture<Void> initializeStorage(StorageType force) {
-        StorageType type = force == null ? ParseUtil.parseEnumHandled(plugin.getConfiguration().getString("storage.type", "json"),
+        this.storageType = force == null ? ParseUtil.parseEnumHandled(plugin.getConfiguration().getString("storage.type", "json"),
                 StorageType.class, StorageType.JSON, e -> log.warning(String.format("Invalid storage type %s, using JSON as default.", e.getInput()))) : force;
 
-        switch (type) {
+        switch (storageType) {
             case JSON:
                 storage = new JsonStorage(plugin, plugin.getConfiguration().getString("storage.json.file", "data.json"));
                 break;
@@ -90,18 +126,24 @@ public class UserManager {
 
     @Nullable
     public User getUser(UUID uniqueID) {
-        checkInitialized();
         return this.loadedUsers.get(uniqueID);
     }
 
-    @NotNull
-    public User getOrCreateUser(UUID uniqueID) {
+    public CompletableFuture<User> getOrLoadUser(UUID uniqueID) {
         checkInitialized();
-        return this.loadedUsers.containsKey(uniqueID) ? this.loadedUsers.get(uniqueID) : createUser(uniqueID);
+        if (loadedUsers.containsKey(uniqueID))
+            return CompletableFuture.supplyAsync(() -> loadedUsers.get(uniqueID));
+        return loadUser(uniqueID);
     }
 
     @NotNull
-    public User getOrCreateUser(OfflinePlayer offlinePlayer) {
+    public CompletableFuture<User> getOrCreateUser(UUID uniqueID) {
+        checkInitialized();
+        return getOrLoadUser(uniqueID).thenApplyAsync(user -> user == null ? createUser(uniqueID) : user);
+    }
+
+    @NotNull
+    public CompletableFuture<User> getOrCreateUser(OfflinePlayer offlinePlayer) {
         return getOrCreateUser(offlinePlayer.getUniqueId());
     }
 
@@ -111,6 +153,26 @@ public class UserManager {
         User user = new User(uniqueID);
         this.loadedUsers.put(uniqueID, user);
         return user;
+    }
+
+    public CompletableFuture<User> loadUser(UUID uniqueID) {
+        if (loadCache.isLoading(uniqueID))
+            return loadCache.getLoading(uniqueID);
+
+        CompletableFuture<User> future = storage.load(uniqueID);
+
+        loadCache.setLoading(uniqueID, future);
+
+        return future.thenApplyAsync(user -> {
+            loadCache.setLoaded(uniqueID);
+            return user;
+        });
+    }
+
+    public void saveUser(UUID uniqueID) {
+        User user = getUser(uniqueID);
+        if (user != null)
+            storage.save(user);
     }
 
     public void load() {
@@ -145,11 +207,11 @@ public class UserManager {
         log.info(String.format("Purged %d empty account(s)...", count));
     }
 
-    public void save() {
+    public CompletableFuture<Void> save() {
         purgeEmpty();
 
         checkInitialized();
-        storage.save(loadedUsers.values())
+        return storage.save(loadedUsers.values())
                 .thenRunAsync(() -> log.info(String.format("Saved %d user(s)...", loadedUsers.size())))
                 .exceptionally(e -> {
                     log.severe(String.format("Could not save %d users: %s", loadedUsers.size(), e.getMessage()));
