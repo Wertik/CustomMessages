@@ -69,7 +69,7 @@ public class PlayerListener {
                     if (killer == null)
                         return;
 
-                    event.setDeathMessage(handle(player, MessageType.KILL, killer));
+                    event.setDeathMessage(handle(killer, MessageType.KILL, player));
                 }
             });
 

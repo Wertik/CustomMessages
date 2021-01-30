@@ -9,14 +9,15 @@ import space.devport.utils.utility.ParseUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandParser {
 
     private final MessagePlugin plugin;
     private final LanguageManager language;
+
+    private final Map<MessageType, Map<String, String>> cachedDefaults = new HashMap<>();
 
     public CommandParser(MessagePlugin plugin) {
         this.plugin = plugin;
@@ -39,18 +40,27 @@ public class CommandParser {
         return player;
     }
 
-    public String[] obtainDefaults(MessageType type) {
-        ConfigurationSection section = language.getLanguage().getFileConfiguration().getConfigurationSection(String.format("Type-Defaults.%s", type.toString().toLowerCase()));
-        if (section == null)
-            return new String[0];
+    public Map<String, String> obtainDefaults(MessageType type) {
 
-        List<String> defaults = new ArrayList<>();
+        if (cachedDefaults.containsKey(type))
+            return cachedDefaults.get(type);
+
+        ConfigurationSection section = language.getLanguage().getFileConfiguration().getConfigurationSection(String.format("Type-Defaults.%s", type.toString().toLowerCase()));
+
+        Map<String, String> out = new HashMap<>();
+
+        if (section == null)
+            return out;
+
         for (String key : section.getKeys(false)) {
-            defaults.add(section.getString(key));
+            out.put(key, section.getString(key));
         }
 
-        Collections.reverse(defaults);
+        cachedDefaults.put(type, out);
+        return out;
+    }
 
-        return defaults.toArray(new String[0]);
+    public void emptyCache() {
+        cachedDefaults.clear();
     }
 }

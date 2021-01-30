@@ -23,9 +23,9 @@ public class MessageLanguage extends LanguageDefaults {
         addDefault("Commands.Menu.Done-Others", "&7Opened &f%type% &7message menu for &f%player%");
 
         addDefault("Commands.Show.Header", "&7Messages of &f%player%&7");
-        addDefault("Commands.Show.Line-Format", "&e%type% &8&l| &f%message% (&7 &r%preview% &7)");
+        addDefault("Commands.Show.Line-Format", "&e%type% &8&l| &f%message% &7( &r%preview% &7)");
 
-        addDefault("Type-Defaults.kill.Killer", "md_5");
+        addDefault("Type-Defaults.kill.Victim", "md_5");
         addDefault("Type-Defaults.kill.Health", "256");
     }
 }

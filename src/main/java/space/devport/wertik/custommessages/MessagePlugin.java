@@ -16,6 +16,9 @@ import space.devport.wertik.custommessages.listeners.PlayerListener;
 import space.devport.wertik.custommessages.system.message.MessageManager;
 import space.devport.wertik.custommessages.system.user.UserManager;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 @Log
 public class MessagePlugin extends DevportPlugin {
 
@@ -36,6 +39,9 @@ public class MessagePlugin extends DevportPlugin {
 
     private MessageExpansion expansion;
 
+    @Getter
+    private NumberFormat numberFormat;
+
     @Override
     public void onPluginEnable() {
         MessagePlugin.instance = this;
@@ -44,6 +50,8 @@ public class MessagePlugin extends DevportPlugin {
 
         messageManager.load();
         messageManager.loadOptions();
+
+        loadOptions();
 
         userManager.load();
 
@@ -91,14 +99,22 @@ public class MessagePlugin extends DevportPlugin {
         userManager.save();
     }
 
+    private void loadOptions() {
+        this.numberFormat = new DecimalFormat(getConfiguration().getString("number-format", "#.##"));
+    }
+
     @Override
     public void onReload() {
         playerListener.unregisterAll();
+
+        loadOptions();
 
         messageManager.load();
         messageManager.loadOptions();
 
         playerListener.registerListeners();
+
+        commandParser.emptyCache();
 
         registerPlaceholders();
     }

@@ -20,6 +20,9 @@ title:
   stay: 40
   out: 20
 
+# Number format to use for health displays.
+number-format: "#.##"
+
 # Enable which actions' messages should he handled by the plugin.
 actions:
   join: true

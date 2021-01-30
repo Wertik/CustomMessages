@@ -1,28 +1,35 @@
 package space.devport.wertik.custommessages.system.message.type;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import space.devport.utils.text.message.Message;
+import space.devport.wertik.custommessages.MessagePlugin;
+
+import java.util.Map;
 
 public enum MessageType {
 
     JOIN,
     LEAVE,
-    KILL((message, extra) -> {
+    KILL((player, message, extra) -> {
         for (Object obj : extra) {
             if (obj instanceof Player) {
-                Player player = (Player) obj;
-                message.replace("%killer%", player.getName())
-                        .replace("%killerHealth%", player.getHealth());
+                Player victim = (Player) obj;
+                message.replace("%victim%", victim.getName());
             }
         }
+
+        if (player.getPlayer() != null)
+            message.replace("%killerHealth%", MessagePlugin.getInstance().getNumberFormat().format(player.getPlayer().getHealth()));
+
         return message;
     }, (message, defaults) -> {
-        if (defaults.length < 2)
+        if (defaults.size() < 2)
             return message;
 
-        return message.replaceAll("(?i)%killer%", defaults[0])
-                .replaceAll("(?i)%killerHealth%", defaults[1]);
+        return message.replaceAll("(?i)%victim%", defaults.get("Victim"))
+                .replaceAll("(?i)%killerHealth%", defaults.get("Health"));
     });
 
     private final ExtraParser parser;
@@ -39,19 +46,19 @@ public enum MessageType {
         this.defaultParser = defaultParser;
     }
 
-    public String parseDefaults(String message, String... defaults) {
-        if (!hasExtra() || defaults.length == 0)
+    public String parseDefaults(String message, Map<String, String> defaults) {
+        if (!hasExtra() || defaults.size() == 0)
             return message;
 
         return defaultParser.parse(message, defaults);
     }
 
-    @Contract("!null,_ -> !null")
-    public Message parseExtra(Message message, Object[] extra) {
+    @Contract("_,!null,_ -> !null")
+    public Message parseExtra(OfflinePlayer player, Message message, Object[] extra) {
         if (parser == null || extra.length == 0)
             return message;
 
-        return parser.parse(message, extra);
+        return parser.parse(player, message, extra);
     }
 
     public boolean hasExtra() {

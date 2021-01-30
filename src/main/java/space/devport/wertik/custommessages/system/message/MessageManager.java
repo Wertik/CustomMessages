@@ -90,7 +90,7 @@ public class MessageManager {
         if (message == null || message.isEmpty())
             return null;
 
-        message = type.parseExtra(message.clone(), extra);
+        message = type.parseExtra(player, message.clone(), extra);
 
         format = format.replaceAll("(?i)%message%", message.toString());
 

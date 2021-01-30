@@ -8,9 +8,9 @@ join:
 
 leave:
   default: '&f%player% &7left the game.'
-  begone: '&7Begone! &f%player%! &7&oWhat a neat magic trick huh?'
+  begone: '&7Begone, &f%player%! &7&oWhat a neat magic trick huh?'
 
 kill:
-  default: '&c%killer% &8( &a%killerHealth% &8) &7killed &f%player%'
-  trainee: '&c%killer% &7trained hard enough and beat &f%player%&7, finally...'
-  spinach: '&c%killer% &7ate some spinach and sent &f%player% &7into the stratosphere.'
+  default: '&c%player% &8( &a%killerHealth% &8) &7killed &f%victim%'
+  trainee: '&c%player% &7trained hard enough and beat &f%victim%&7, finally...'
+  spinach: '&c%player% &7ate some spinach and sent &f%victim% &7into the stratosphere.'
