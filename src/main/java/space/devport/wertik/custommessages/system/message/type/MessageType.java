@@ -32,6 +32,8 @@ public enum MessageType {
                 .replaceAll("(?i)%killerHealth%", defaults.get("Health"));
     });
 
+    public static final MessageType[] VALUES = MessageType.values();
+
     private final ExtraParser parser;
 
     private final DefaultParser defaultParser;

@@ -35,3 +35,17 @@ formats:
   join: '&8[&a+&8] &7%message%'
   leave: '&8[&c-&8] &7%message%'
   kill: '&8[&4X&8] %message%'
+
+# User data storage configuration.
+storage:
+  # Available: mysql, json
+  type: json
+  json:
+    file: data.json
+  mysql:
+    host: localhost
+    port: 3306
+    user: 'root'
+    pass: 'secretpassword'
+    database: custommessages
+    table: users

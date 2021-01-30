@@ -53,15 +53,17 @@ public class MessagePlugin extends DevportPlugin {
 
         loadOptions();
 
-        userManager.load();
-
-        playerListener.registerListeners();
-
         new MessageLanguage(this).register();
 
-        registerMainCommand(new MessageCommand(this));
+        userManager.initializeStorage().thenRun(() -> {
+            userManager.load();
 
-        registerPlaceholders();
+            playerListener.registerListeners();
+
+            registerMainCommand(new MessageCommand(this));
+
+            registerPlaceholders();
+        });
     }
 
     private void unregisterPlaceholders() {
@@ -106,6 +108,7 @@ public class MessagePlugin extends DevportPlugin {
     @Override
     public void onReload() {
         playerListener.unregisterAll();
+        userManager.save();
 
         loadOptions();
 
