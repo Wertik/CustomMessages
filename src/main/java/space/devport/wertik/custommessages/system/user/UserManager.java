@@ -170,8 +170,10 @@ public class UserManager {
 
         return future.thenApplyAsync(user -> {
             loadCache.setLoaded(uniqueID);
-            if (user != null)
+            if (user != null) {
+                loadedUsers.put(uniqueID, user);
                 log.log(DebugLevel.DEBUG, String.format("Loaded user %s", uniqueID.toString()));
+            }
             return user;
         });
     }
@@ -247,14 +249,14 @@ public class UserManager {
                 return null;
             }).join();
         else
-            storage.finish().thenAcceptAsync(res -> {
-                if (!res)
-                    log.warning("Failed to save users.");
-                else
-                    log.info(String.format("Saved %d user(s)...", loadedUsers.size()));
-            }).exceptionally(e -> {
-                e.printStackTrace();
-                return null;
-            }).join();
+            storage.save(loadedUsers.values())
+                    .thenAcceptAsync(res -> {
+                        log.info(String.format("Saved %d user(s)...", loadedUsers.size()));
+                        storage.finish();
+                    })
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    }).join();
     }
 }

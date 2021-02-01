@@ -11,10 +11,10 @@ public enum Query {
             "UNIQUE (`uuid`)\n" +
             ") DEFAULT CHARSET=utf8"),
 
-    LOAD_USER("SELECT `uuid`, `join`, `leave`, `kill` FROM `%table%`"),
+    LOAD_USER("SELECT `uuid`, `join`, `leave`, `kill` FROM `%table%` WHERE `uuid` = ?"),
 
     SAVE_USER("INSERT INTO `%table%` (`uuid`, `join`, `leave`, `kill`) " +
-            "VALUES (?, ?, ?) " +
+            "VALUES (?, ?, ?, ?) " +
             "ON DUPLICATE KEY UPDATE " +
             "`uuid` = ?, `join` = ?, `leave` = ?, `kill` = ?"),
 

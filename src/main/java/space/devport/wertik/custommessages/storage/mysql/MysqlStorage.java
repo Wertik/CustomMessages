@@ -47,25 +47,22 @@ public class MysqlStorage implements IStorage {
     public CompletableFuture<User> load(UUID uniqueID) {
         CompletableFuture<User> future = new CompletableFuture<>();
         serverConnection.executeQuery(Query.LOAD_USER.get(table), FastUUID.toString(uniqueID)).thenAcceptAsync(set -> {
-            if (set == null) {
-                future.complete(null);
-                return;
-            }
+            if (set != null)
+                try {
+                    if (set.next()) {
+                        User user = new User(uniqueID);
 
-            try {
-                if (set.next()) {
-                    User user = new User(uniqueID);
-
-                    for (MessageType type : MessageType.VALUES) {
-                        String message = set.getString(type.toString().toLowerCase());
-                        if (message != null)
-                            user.setMessage(type, message);
+                        for (MessageType type : MessageType.VALUES) {
+                            String message = set.getString(type.toString().toLowerCase());
+                            if (message != null)
+                                user.setMessage(type, message);
+                        }
+                        future.complete(user);
+                        return;
                     }
-                    future.complete(user);
+                } catch (SQLException ignored) {
                 }
-            } catch (SQLException e) {
-                future.complete(null);
-            }
+            future.complete(null);
         });
         return future;
     }
@@ -73,9 +70,14 @@ public class MysqlStorage implements IStorage {
     @Override
     public CompletableFuture<Boolean> save(User user) {
         List<Object> params = new ArrayList<>();
-        params.add(FastUUID.toString(user.getUniqueID()));
-        for (MessageType type : MessageType.VALUES) {
-            params.add(user.getMessage(type));
+        // Run twice, one set of params for insert, second for update.
+        for (int i = 0; i < 2; i++) {
+            params.add(FastUUID.toString(user.getUniqueID()));
+
+            // Insert params
+            for (MessageType type : MessageType.VALUES) {
+                params.add(user.getMessage(type));
+            }
         }
         return serverConnection.execute(Query.SAVE_USER.get(table), params.toArray());
     }
