@@ -37,7 +37,10 @@ public class MysqlStorage implements IStorage {
 
     @Override
     public CompletableFuture<Boolean> finish() {
-        return null;
+        return CompletableFuture.supplyAsync(() -> {
+            serverConnection.close();
+            return true;
+        });
     }
 
     @Override

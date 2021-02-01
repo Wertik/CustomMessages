@@ -1,6 +1,7 @@
 package space.devport.wertik.custommessages.storage.json;
 
 import lombok.extern.java.Log;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.json.GsonHelper;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.storage.IStorage;
@@ -20,37 +21,63 @@ public class JsonStorage implements IStorage {
 
     private final String fileName;
 
+    private CompletableFuture<Boolean> saving;
+
     public JsonStorage(MessagePlugin plugin, String fileName) {
         this.plugin = plugin;
         this.fileName = fileName;
+        gsonHelper.build();
     }
 
     @Override
     public CompletableFuture<Boolean> initialize() {
-        return gsonHelper.loadMapAsync(plugin.getDataFolder() + "/" + fileName, UUID.class, User.class).thenApplyAsync(loaded -> {
-            if (loaded == null)
-                loaded = new HashMap<>();
+        return gsonHelper.loadMapAsync(plugin.getDataFolder() + "/" + fileName, UUID.class, User.class)
+                .thenApplyAsync(loaded -> {
+                    if (loaded == null)
+                        loaded = new HashMap<>();
 
-            storedUsers.clear();
-            storedUsers.putAll(loaded);
-            return true;
-        }).exceptionally(e -> {
-            log.warning(String.format("Failed to load users: %s", e.getMessage()));
-            e.printStackTrace();
-            return false;
-        });
+                    storedUsers.clear();
+                    storedUsers.putAll(loaded);
+                    return true;
+                }).exceptionally(e -> {
+                    log.warning(String.format("Failed to load users: %s", e.getMessage()));
+                    e.printStackTrace();
+                    return false;
+                });
     }
 
     @Override
     public CompletableFuture<Boolean> finish() {
-        return saveToFile();
+        if (saving != null) {
+            saving.complete(false);
+            saving = null;
+            log.info("Interrupted json saving process to finish up.");
+        }
+
+        log.log(DebugLevel.DEBUG, "Saving json to file...");
+        boolean res = gsonHelper.save(plugin.getDataFolder() + "/" + fileName, storedUsers);
+        return CompletableFuture.supplyAsync(() -> res);
     }
 
     private CompletableFuture<Boolean> saveToFile() {
-        return gsonHelper.save(storedUsers, plugin.getDataFolder() + "/" + fileName).thenApplyAsync(ignored -> true)
+
+        // Cancel previous save and run a new one with fresh data.
+        if (saving != null) {
+            saving.complete(false);
+            saving = null;
+            return saveToFile();
+        }
+
+        log.log(DebugLevel.DEBUG, "Saving json to file...");
+        return saving = gsonHelper.saveAsync(plugin.getDataFolder() + "/" + fileName, storedUsers)
+                .thenApplyAsync(ignored -> {
+                    log.log(DebugLevel.DEBUG, String.format("Saved %d users to json", storedUsers.size()));
+                    saving = null;
+                    return true;
+                })
                 .exceptionally(e -> {
-                    log.warning(String.format("Failed to save users: %s", e.getMessage()));
-                    e.printStackTrace();
+                    log.severe("Could not save users.");
+                    saving = null;
                     return false;
                 });
     }

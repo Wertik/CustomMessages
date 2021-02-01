@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.callbacks.ExceptionCallback;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.utility.ThreadUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
@@ -83,6 +84,7 @@ public class UserManager {
         switch (storageType) {
             case JSON:
                 storage = new JsonStorage(plugin, plugin.getConfiguration().getString("storage.json.file", "data.json"));
+                log.info("Initialized JSON storage.");
                 break;
             case MYSQL:
                 ConnectionInfo connectionInfo = ConnectionInfo.load(plugin.getConfig().getConfigurationSection("storage.mysql"));
@@ -94,6 +96,7 @@ public class UserManager {
                 }
 
                 storage = new MysqlStorage(connectionInfo, plugin.getConfiguration().getString("storage.mysql.table", "users"));
+                log.info("Initialized MySQL storage.");
                 break;
         }
 
@@ -152,6 +155,8 @@ public class UserManager {
         checkInitialized();
         User user = new User(uniqueID);
         this.loadedUsers.put(uniqueID, user);
+        storage.save(user);
+        log.log(DebugLevel.DEBUG, String.format("Created user %s", uniqueID.toString()));
         return user;
     }
 
@@ -165,14 +170,18 @@ public class UserManager {
 
         return future.thenApplyAsync(user -> {
             loadCache.setLoaded(uniqueID);
+            if (user != null)
+                log.log(DebugLevel.DEBUG, String.format("Loaded user %s", uniqueID.toString()));
             return user;
         });
     }
 
     public void saveUser(UUID uniqueID) {
         User user = getUser(uniqueID);
-        if (user != null)
+        if (user != null) {
             storage.save(user);
+            log.log(DebugLevel.DEBUG, String.format("Saved used %s", uniqueID.toString()));
+        }
     }
 
     public void load() {
@@ -218,5 +227,34 @@ public class UserManager {
                     e.printStackTrace();
                     return null;
                 });
+    }
+
+    // Join the statements to ensure it runs before the plugin unloads.
+    public void finish() {
+        if (storage instanceof JsonStorage)
+            storage.save(loadedUsers.values()).thenRun(() -> {
+                storage.finish().thenAcceptAsync(res -> {
+                    if (!res)
+                        log.warning("Failed to save users.");
+                    else
+                        log.info(String.format("Saved %d user(s)...", loadedUsers.size()));
+                }).exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
+            }).exceptionally(e -> {
+                e.printStackTrace();
+                return null;
+            }).join();
+        else
+            storage.finish().thenAcceptAsync(res -> {
+                if (!res)
+                    log.warning("Failed to save users.");
+                else
+                    log.info(String.format("Saved %d user(s)...", loadedUsers.size()));
+            }).exceptionally(e -> {
+                e.printStackTrace();
+                return null;
+            }).join();
     }
 }

@@ -57,12 +57,13 @@ public class MessagePlugin extends DevportPlugin {
         new MessageLanguage(this).register();
         addListener(new PlayerListener(this));
 
+        registerMainCommand(new MessageCommand(this));
+
         userManager.initializeStorage().thenRun(() -> {
             userManager.load();
+            userManager.startAutoSave();
 
             listenerRegistry.registerListeners();
-
-            registerMainCommand(new MessageCommand(this));
 
             registerPlaceholders();
         });
@@ -100,7 +101,9 @@ public class MessagePlugin extends DevportPlugin {
         HandlerList.unregisterAll(this);
         unregisterPlaceholders();
 
-        userManager.save();
+        userManager.stopAutoSave();
+
+        userManager.finish();
     }
 
     private void loadOptions() {
@@ -109,6 +112,7 @@ public class MessagePlugin extends DevportPlugin {
 
     @Override
     public void onReload() {
+        userManager.stopAutoSave();
         listenerRegistry.unregisterAll();
 
         commandParser.emptyCache();
@@ -124,9 +128,11 @@ public class MessagePlugin extends DevportPlugin {
                     userManager.initializeStorage().thenRun(() -> {
                         userManager.load();
                         listenerRegistry.registerListeners();
+                        userManager.startAutoSave();
                     }));
         } else {
             listenerRegistry.registerListeners();
+            userManager.startAutoSave();
         }
 
         registerPlaceholders();
