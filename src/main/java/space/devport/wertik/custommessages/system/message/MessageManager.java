@@ -129,4 +129,8 @@ public class MessageManager {
     public Map<MessageType, MessageStorage> getLoadedMessages() {
         return Collections.unmodifiableMap(this.loadedMessages);
     }
+
+    public String obtainPreview(MessageType type, OfflinePlayer player, String message) {
+        return type.parseDefaults(plugin.getMessageManager().getFormattedMessage(player, type, message), plugin.getCommandParser().obtainDefaults(type));
+    }
 }
