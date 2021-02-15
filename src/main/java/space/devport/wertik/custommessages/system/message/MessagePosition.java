@@ -11,7 +11,9 @@ import space.devport.wertik.custommessages.MessagePlugin;
 
 public enum MessagePosition {
 
-    TEXT,
+    TEXT(text -> {
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(text));
+    }),
 
     TITLE(text -> {
         String[] arr = text.split("\n");
@@ -28,7 +30,6 @@ public enum MessagePosition {
                     title,
                     subtitle);
         }
-        return null;
     }),
 
     ACTION_BAR(text -> {
@@ -37,7 +38,6 @@ public enum MessagePosition {
         for (Player player : Bukkit.getOnlinePlayers()) {
             ActionBar.sendActionBar(plugin, player, colored, plugin.getConfig().getInt("action-bar.duration", 20));
         }
-        return null;
     });
 
     private final MessageDisplay handler;
@@ -47,11 +47,12 @@ public enum MessagePosition {
     }
 
     MessagePosition() {
-        this.handler = text -> text;
+        this.handler = text -> {
+        };
     }
 
     private interface MessageDisplay {
-        String display(String text);
+        void display(String text);
     }
 
     public static MessagePosition fromString(@Nullable String str, MessagePosition def) {
@@ -65,8 +66,7 @@ public enum MessagePosition {
         }
     }
 
-    @Nullable
-    public String display(String text) {
-        return handler.display(text);
+    public void display(String text) {
+        handler.display(text);
     }
 }

@@ -14,6 +14,7 @@ import space.devport.wertik.custommessages.system.message.type.MessageType;
 import space.devport.wertik.custommessages.system.user.User;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Log
@@ -97,17 +98,24 @@ public class MessageManager {
         return MessageUtil.formatMessage(format, player);
     }
 
-    @Nullable
-    public String getFormattedMessage(OfflinePlayer player, MessageType type) {
-        return getFormattedMessage(player, type, new Object[0]);
-    }
-
-    @Nullable
-    public String getFormattedMessage(OfflinePlayer player, MessageType type, Object... extra) {
+    public String getLoadedFormattedMessage(OfflinePlayer player, MessageType type, Object... extra) {
         User user = plugin.getUserManager().getUser(player);
         if (user == null)
             plugin.getUserManager().loadUser(player.getUniqueId());
         return getFormattedMessage(player, type, user == null ? "default" : user.getMessage(type), extra);
+    }
+
+    public String getLoadedFormattedMessage(OfflinePlayer player, MessageType type) {
+        return getLoadedFormattedMessage(player, type, new Object[0]);
+    }
+
+    public CompletableFuture<String> getFormattedMessage(OfflinePlayer player, MessageType type) {
+        return getFormattedMessage(player, type, new Object[0]);
+    }
+
+    public CompletableFuture<String> getFormattedMessage(OfflinePlayer player, MessageType type, Object... extra) {
+        return plugin.getUserManager().getOrLoadUser(player.getUniqueId())
+                .thenApplyAsync(user -> getFormattedMessage(player, type, user == null ? "default" : user.getMessage(type), extra));
     }
 
     public List<String> getMessages(MessageType type) {

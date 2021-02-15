@@ -51,7 +51,7 @@ public class MessageCommand extends MainCommand {
                                     header.append(lineFormat.clone()
                                             .replace("%type%", type.toString().toLowerCase())
                                             .replace("%message%", user.getMessage(type))
-                                            .replace("%preview%", type.parseDefaults(plugin.getMessageManager().getFormattedMessage(target, type),
+                                            .replace("%preview%", type.parseDefaults(plugin.getMessageManager().getLoadedFormattedMessage(target, type),
                                                     plugin.getCommandParser().obtainDefaults(type))));
                                 }
 

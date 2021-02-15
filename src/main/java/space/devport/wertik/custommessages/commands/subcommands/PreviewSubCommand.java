@@ -41,12 +41,13 @@ public class PreviewSubCommand extends MessageSubCommand {
             target = (Player) sender;
         }
 
-        String message = plugin.getMessageManager().getFormattedMessage(target, type);
-        language.getPrefixed("Commands.Preview.Done")
-                .replace("%player%", target.getName())
-                .replace("%type%", type.toString().toLowerCase())
-                .replace("%message%", message == null ? "&cNone" : type.parseDefaults(message, plugin.getCommandParser().obtainDefaults(type)))
-                .send(sender);
+        plugin.getMessageManager().getFormattedMessage(target, type).thenAcceptAsync(message -> {
+            language.getPrefixed("Commands.Preview.Done")
+                    .replace("%player%", target.getName())
+                    .replace("%type%", type.toString().toLowerCase())
+                    .replace("%message%", message == null ? "&cNone" : type.parseDefaults(message, plugin.getCommandParser().obtainDefaults(type)))
+                    .send(sender);
+        });
         return CommandResult.SUCCESS;
     }
 

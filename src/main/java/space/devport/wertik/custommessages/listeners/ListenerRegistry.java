@@ -1,6 +1,7 @@
 package space.devport.wertik.custommessages.listeners;
 
 import lombok.extern.java.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -41,8 +42,8 @@ public class ListenerRegistry {
             registerListener(MessageType.JOIN, new Listener() {
                 @EventHandler
                 public void onJoin(PlayerJoinEvent event) {
-                    event.setJoinMessage(handle(event.getPlayer(), MessageType.JOIN));
-                    plugin.getSoundRegistry().play(event.getPlayer(), SoundType.MESSAGE_JOIN);
+                    event.setJoinMessage(null);
+                    handle(event.getPlayer(), MessageType.JOIN, SoundType.MESSAGE_JOIN);
                 }
             });
 
@@ -50,17 +51,13 @@ public class ListenerRegistry {
             registerListener(MessageType.LEAVE, new Listener() {
                 @EventHandler
                 public void onLeave(PlayerQuitEvent event) {
-                    event.setQuitMessage(handle(event.getPlayer(), MessageType.LEAVE, event.getPlayer().getWorld()));
-                    plugin.getSoundRegistry().play(event.getPlayer(), SoundType.MESSAGE_LEAVE);
+                    event.setQuitMessage(null);
+                    handle(event.getPlayer(), MessageType.LEAVE, SoundType.MESSAGE_LEAVE, event.getPlayer().getWorld());
                 }
 
                 @EventHandler
                 public void onKick(PlayerKickEvent event) {
-                    String msg = handle(event.getPlayer(), MessageType.LEAVE);
-                    // Both kick and leave message are sent when a player is kicked.
-                    // When we are sending a leave message, avoid the kick one.
-                    if (msg != null)
-                        event.setLeaveMessage("");
+                    event.setLeaveMessage("");
                 }
             });
 
@@ -74,7 +71,8 @@ public class ListenerRegistry {
                     if (killer == null)
                         return;
 
-                    event.setDeathMessage(handle(killer, MessageType.KILL, player));
+                    event.setDeathMessage(null);
+                    handle(killer, MessageType.KILL, SoundType.MESSAGE_KILL, player);
 
                     plugin.getSoundRegistry().get(SoundType.MESSAGE_KILL).ifPresent(s -> {
                         // Play the sound for both
@@ -106,9 +104,10 @@ public class ListenerRegistry {
         log.info(String.format("Unregistered %d listener(s)...", count));
     }
 
-    @Nullable
-    private String handle(@NotNull Player player, @NotNull MessageType type, Object... extra) {
-        String message = messageManager.getFormattedMessage(player, type, extra);
-        return messageManager.getPosition().display(message);
+    private void handle(@NotNull Player player, @NotNull MessageType type, SoundType soundType, Object... extra) {
+        messageManager.getFormattedMessage(player, type, extra).thenAcceptAsync(message -> {
+            messageManager.getPosition().display(message);
+            plugin.getSoundRegistry().play(player, soundType);
+        });
     }
 }

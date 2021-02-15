@@ -44,7 +44,7 @@ public class MessageExpansion extends PlaceholderExpansion {
             return user.getMessage(type);
 
         if (args[1].equalsIgnoreCase("formatted")) {
-            String msg = plugin.getMessageManager().getFormattedMessage(player, type);
+            String msg = plugin.getMessageManager().getLoadedFormattedMessage(player, type);
             return msg != null ? msg : "none";
         }
 
