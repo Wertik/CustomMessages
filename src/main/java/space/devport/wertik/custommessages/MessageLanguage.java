@@ -1,11 +1,11 @@
 package space.devport.wertik.custommessages;
 
-import space.devport.utils.DevportPlugin;
-import space.devport.utils.text.language.LanguageDefaults;
+import space.devport.dock.api.IDockedPlugin;
+import space.devport.dock.text.language.LanguageDefaults;
 
 public class MessageLanguage extends LanguageDefaults {
 
-    public MessageLanguage(DevportPlugin plugin) {
+    public MessageLanguage(IDockedPlugin plugin) {
         super(plugin);
     }
 
@@ -27,5 +27,9 @@ public class MessageLanguage extends LanguageDefaults {
 
         addDefault("Type-Defaults.kill.Victim", "md_5");
         addDefault("Type-Defaults.kill.Health", "256");
+
+        addDefault("Types.join", "&eJoin");
+        addDefault("Types.leave", "&cLeave");
+        addDefault("Types.kill", "&4Kill");
     }
 }

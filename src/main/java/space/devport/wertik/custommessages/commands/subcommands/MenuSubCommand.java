@@ -5,10 +5,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.commands.struct.ArgumentRange;
-import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.commands.struct.Preconditions;
-import space.devport.utils.text.language.LanguageManager;
+import space.devport.dock.commands.struct.ArgumentRange;
+import space.devport.dock.commands.struct.CommandResult;
+import space.devport.dock.commands.struct.Preconditions;
+import space.devport.dock.text.language.LanguageManager;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.commands.MessageSubCommand;
 import space.devport.wertik.custommessages.gui.MessageMenu;
@@ -22,7 +22,7 @@ public class MenuSubCommand extends MessageSubCommand {
 
     public MenuSubCommand(MessagePlugin plugin) {
         super(plugin, "menu");
-        this.preconditions = new Preconditions()
+        getPreconditions()
                 .playerOnly();
     }
 

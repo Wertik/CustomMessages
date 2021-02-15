@@ -2,8 +2,8 @@ package space.devport.wertik.custommessages.commands.subcommands;
 
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.commands.struct.ArgumentRange;
-import space.devport.utils.commands.struct.CommandResult;
+import space.devport.dock.commands.struct.ArgumentRange;
+import space.devport.dock.commands.struct.CommandResult;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.commands.MessageSubCommand;
 

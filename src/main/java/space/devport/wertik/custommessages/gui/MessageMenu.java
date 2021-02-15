@@ -3,14 +3,15 @@ package space.devport.wertik.custommessages.gui;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import space.devport.utils.CustomisationManager;
-import space.devport.utils.logging.DebugLevel;
-import space.devport.utils.menu.Menu;
-import space.devport.utils.menu.MenuBuilder;
-import space.devport.utils.menu.item.MatrixItem;
-import space.devport.utils.menu.item.MenuItem;
-import space.devport.utils.text.Placeholders;
+import space.devport.dock.CustomisationManager;
+import space.devport.dock.menu.Menu;
+import space.devport.dock.menu.MenuBuilder;
+import space.devport.dock.menu.item.MatrixItem;
+import space.devport.dock.menu.item.MenuItem;
+import space.devport.dock.text.language.LanguageManager;
+import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.wertik.custommessages.MessagePlugin;
+import space.devport.wertik.custommessages.sounds.SoundType;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class MessageMenu extends Menu {
             MenuBuilder template = plugin.getManager(CustomisationManager.class).getMenu("message-overview");
 
             if (template == null) {
-                log.warning("Menu `message-overview` is missing in customisation.yml. Delete the file and let it regenerate.");
+                log.warning(() -> "Menu `message-overview` is missing in customisation.yml. Delete the file and let it regenerate.");
                 return;
             }
 
@@ -75,33 +76,42 @@ public class MessageMenu extends Menu {
             MenuItem messageItemTaken = new MenuItem(menuBuilder.getItem("message-item-taken"));
 
             Placeholders placeholders = plugin.obtainPlaceholders()
-                    .add("%type%", type.toString().toLowerCase())
-                    .add("%player%", player.getName())
-                    .add("%message_used%", usedMessage);
+                    .add("type", type.toString().toLowerCase())
+                    .add("type_display", plugin.getManager(LanguageManager.class).get(String.format("Types.%s", type.toString())))
+                    .add("player", player.getName())
+                    .add("message_used", usedMessage);
 
-            menuBuilder.getTitle().parseWith(placeholders);
+            menuBuilder.placeholders(placeholders);
 
             List<String> messages = plugin.getMessageManager().getMessages(type);
 
             for (int i = (this.page - 1) * slotsPerPage; i < messages.size() && i < slotsPerPage * this.page; i++) {
 
                 String key = messages.get(i);
-                MenuItem item = new MenuItem(usedMessage.equals(key) ? messageItemTaken : messageItem);
+                boolean used = usedMessage.equals(key);
+
+                MenuItem item;
+                if (used) {
+                    item = new MenuItem(messageItemTaken);
+                    messageItemTaken.setClickAction(click -> plugin.getSoundRegistry().play(player, SoundType.MENU_USED));
+                } else {
+                    item = new MenuItem(messageItem);
+                    item.setClickAction((itemClick) -> {
+                        user.setMessage(type, key);
+                        plugin.getSoundRegistry().play(player, SoundType.MENU_PICK);
+                        build().thenRun(this::reload);
+                    });
+                }
 
                 item.getPrefab().getPlaceholders()
                         .add("%message_name%", key)
                         .add("%message_formatted%", plugin.getMessageManager().obtainPreview(type, player, key));
 
-                item.setClickAction((itemClick) -> {
-                    user.setMessage(type, key);
-                    build().thenRun(this::reload);
-                });
-
                 messageMatrix.addItem(item);
             }
 
             for (MenuItem i : messageMatrix.getMenuItems()) {
-                log.log(DebugLevel.DEBUG, i.getPrefab().getPlaceholders().getPlaceholderCache().toString());
+                log.fine(() -> i.getPrefab().getPlaceholders().getPlaceholderCache().toString());
             }
 
             // Page control and close
@@ -129,14 +139,25 @@ public class MessageMenu extends Menu {
 
             setMenuBuilder(menuBuilder.construct());
         }).exceptionally(e -> {
-            log.severe(String.format("Failed to open message menu for %s: %s", player.getName(), e.getMessage()));
+            log.severe(() -> String.format("Failed to open message menu for %s: %s", player.getName(), e.getMessage()));
             e.printStackTrace();
             return null;
         });
     }
 
     public void open() {
-        build().thenRun(() -> Bukkit.getScheduler().runTask(plugin, () -> open(player)));
+        build().thenRun(() -> {
+            // Synchronize
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                open(player);
+                plugin.getSoundRegistry().play(player, SoundType.MENU_OPEN);
+            });
+        });
+    }
+
+    @Override
+    public void onClose() {
+        plugin.getSoundRegistry().play(player, SoundType.MENU_CLOSE);
     }
 
     private int maxPage() {

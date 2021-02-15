@@ -1,8 +1,7 @@
 package space.devport.wertik.custommessages.storage.json;
 
 import lombok.extern.java.Log;
-import space.devport.utils.logging.DebugLevel;
-import space.devport.utils.utility.json.GsonHelper;
+import space.devport.dock.util.json.GsonHelper;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.storage.IStorage;
 import space.devport.wertik.custommessages.system.user.User;
@@ -38,9 +37,10 @@ public class JsonStorage implements IStorage {
 
                     storedUsers.clear();
                     storedUsers.putAll(loaded);
+                    log.fine(() -> "Loaded JSON storage.");
                     return true;
                 }).exceptionally(e -> {
-                    log.warning(String.format("Failed to load users: %s", e.getMessage()));
+                    log.warning(() -> String.format("Failed to load users: %s", e.getMessage()));
                     e.printStackTrace();
                     return false;
                 });
@@ -54,7 +54,7 @@ public class JsonStorage implements IStorage {
             log.info("Interrupted json saving process to finish up.");
         }
 
-        log.log(DebugLevel.DEBUG, "Saving json to file...");
+        log.fine(() -> "Saving json to file...");
         boolean res = gsonHelper.save(plugin.getDataFolder() + "/" + fileName, storedUsers);
         return CompletableFuture.supplyAsync(() -> res);
     }
@@ -68,10 +68,10 @@ public class JsonStorage implements IStorage {
             return saveToFile();
         }
 
-        log.log(DebugLevel.DEBUG, "Saving json to file...");
+        log.fine(() -> "Saving json to file...");
         return saving = gsonHelper.saveAsync(plugin.getDataFolder() + "/" + fileName, storedUsers)
                 .thenApplyAsync(ignored -> {
-                    log.log(DebugLevel.DEBUG, String.format("Saved %d users to json", storedUsers.size()));
+                    log.fine(() -> String.format("Saved %d users to json", storedUsers.size()));
                     saving = null;
                     return true;
                 })
@@ -113,6 +113,7 @@ public class JsonStorage implements IStorage {
                 if (uuids.contains(user.getUniqueID()))
                     out.add(user);
             }
+            log.fine(() -> "Loaded " + out.size() + " from json cache.");
             return out;
         });
     }

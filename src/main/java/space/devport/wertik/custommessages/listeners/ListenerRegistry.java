@@ -13,10 +13,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.wertik.custommessages.MessagePlugin;
+import space.devport.wertik.custommessages.sounds.SoundPlayType;
+import space.devport.wertik.custommessages.sounds.SoundType;
 import space.devport.wertik.custommessages.system.message.MessageManager;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 @Log
@@ -39,6 +42,7 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onJoin(PlayerJoinEvent event) {
                     event.setJoinMessage(handle(event.getPlayer(), MessageType.JOIN));
+                    plugin.getSoundRegistry().play(event.getPlayer(), SoundType.MESSAGE_JOIN);
                 }
             });
 
@@ -47,6 +51,7 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onLeave(PlayerQuitEvent event) {
                     event.setQuitMessage(handle(event.getPlayer(), MessageType.LEAVE, event.getPlayer().getWorld()));
+                    plugin.getSoundRegistry().play(event.getPlayer(), SoundType.MESSAGE_LEAVE);
                 }
 
                 @EventHandler
@@ -70,10 +75,19 @@ public class ListenerRegistry {
                         return;
 
                     event.setDeathMessage(handle(killer, MessageType.KILL, player));
+
+                    plugin.getSoundRegistry().get(SoundType.MESSAGE_KILL).ifPresent(s -> {
+                        // Play the sound for both
+                        if (s.getPlayType() == SoundPlayType.PLAYER) {
+                            s.playForPlayer(killer);
+                            s.playForPlayer(player);
+                        } else
+                            s.play(player);
+                    });
                 }
             });
 
-        log.info("Registered " + this.registeredListeners.size() + " listener(s)...");
+        log.info(() -> "Registered " + registeredListeners.size() + " listener(s)...");
     }
 
     public void registerListener(MessageType type, Listener listener) {
@@ -82,9 +96,14 @@ public class ListenerRegistry {
     }
 
     public void unregisterAll() {
-        for (Listener listener : registeredListeners.values()) {
+        int count = registeredListeners.size();
+        for (Iterator<Listener> iterator = registeredListeners.values().iterator(); iterator.hasNext(); ) {
+            Listener listener = iterator.next();
+            iterator.remove();
+
             HandlerList.unregisterAll(listener);
         }
+        log.info(String.format("Unregistered %d listener(s)...", count));
     }
 
     @Nullable

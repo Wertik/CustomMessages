@@ -5,15 +5,15 @@ import lombok.extern.java.Log;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.event.HandlerList;
-import space.devport.utils.DevportPlugin;
-import space.devport.utils.UsageFlag;
-import space.devport.utils.logging.DebugLevel;
-import space.devport.utils.utility.DependencyUtil;
-import space.devport.utils.utility.VersionUtil;
+import space.devport.dock.DockedPlugin;
+import space.devport.dock.UsageFlag;
+import space.devport.dock.util.DependencyUtil;
+import space.devport.dock.util.VersionUtil;
 import space.devport.wertik.custommessages.commands.CommandParser;
 import space.devport.wertik.custommessages.commands.MessageCommand;
 import space.devport.wertik.custommessages.listeners.ListenerRegistry;
 import space.devport.wertik.custommessages.listeners.PlayerListener;
+import space.devport.wertik.custommessages.sounds.SoundRegistry;
 import space.devport.wertik.custommessages.system.message.MessageManager;
 import space.devport.wertik.custommessages.system.user.UserManager;
 
@@ -21,7 +21,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 @Log
-public class MessagePlugin extends DevportPlugin {
+public class MessagePlugin extends DockedPlugin {
 
     @Getter
     private static MessagePlugin instance;
@@ -34,6 +34,9 @@ public class MessagePlugin extends DevportPlugin {
 
     @Getter
     private final ListenerRegistry listenerRegistry = new ListenerRegistry(this);
+
+    @Getter
+    private final SoundRegistry soundRegistry = new SoundRegistry(this);
 
     @Getter
     private CommandParser commandParser;
@@ -51,6 +54,8 @@ public class MessagePlugin extends DevportPlugin {
 
         messageManager.load();
         messageManager.loadOptions();
+
+        soundRegistry.load();
 
         loadOptions();
 
@@ -80,7 +85,7 @@ public class MessagePlugin extends DevportPlugin {
 
             expansion.unregister();
             this.expansion = null;
-            log.log(DebugLevel.DEBUG, "Unregistered placeholder expansion.");
+            log.fine(() -> "Unregistered placeholder expansion.");
         }
     }
 
@@ -116,6 +121,8 @@ public class MessagePlugin extends DevportPlugin {
         listenerRegistry.unregisterAll();
 
         commandParser.emptyCache();
+
+        soundRegistry.load();
 
         loadOptions();
 

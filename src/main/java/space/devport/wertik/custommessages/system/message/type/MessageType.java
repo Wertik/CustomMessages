@@ -3,7 +3,7 @@ package space.devport.wertik.custommessages.system.message.type;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
-import space.devport.utils.text.message.Message;
+import space.devport.dock.text.message.Message;
 import space.devport.wertik.custommessages.MessagePlugin;
 
 import java.util.Map;

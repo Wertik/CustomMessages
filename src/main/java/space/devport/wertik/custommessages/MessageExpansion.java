@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.callbacks.ExceptionCallback;
-import space.devport.utils.utility.ParseUtil;
+import space.devport.dock.callbacks.ExceptionCallback;
+import space.devport.dock.util.ParseUtil;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
 import space.devport.wertik.custommessages.system.user.User;
 

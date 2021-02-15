@@ -4,8 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import space.devport.utils.text.language.LanguageManager;
-import space.devport.utils.utility.ParseUtil;
+import space.devport.dock.text.language.LanguageManager;
+import space.devport.dock.util.ParseUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
 

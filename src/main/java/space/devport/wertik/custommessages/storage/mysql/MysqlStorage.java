@@ -1,7 +1,7 @@
 package space.devport.wertik.custommessages.storage.mysql;
 
 import lombok.extern.java.Log;
-import space.devport.utils.utility.FastUUID;
+import space.devport.dock.util.FastUUID;
 import space.devport.wertik.custommessages.storage.IStorage;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
 import space.devport.wertik.custommessages.system.user.User;
@@ -89,7 +89,7 @@ public class MysqlStorage implements IStorage {
         for (User user : users) {
             futures.add(save(user).thenAcceptAsync(res -> {
                 if (!res)
-                    log.warning(String.format("Failed to save user %s", user.getUniqueID()));
+                    log.warning(() -> "Failed to save user " + user.getUniqueID());
             }));
         }
 

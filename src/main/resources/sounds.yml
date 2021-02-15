@@ -1,0 +1,26 @@
+# Sound configuration for @name@
+#
+# Version: @version@
+
+
+# Configure sounds for different menu actions
+menu:
+  open:
+    type: BLOCK_CHEST_OPEN
+    volume: 1
+    pitch: 1
+  close:
+    type: BLOCK_CHEST_CLOSE
+  pick:
+    type: ENTITY_SLIME_SQUISH
+  already-used:
+    type: BLOCK_ANVIL_HIT
+
+# Configure sounds for messages
+message:
+  join:
+    type: ENTITY_PLAYER_LEVELUP
+  leave:
+    type: ENTITY_ENDER_DRAGON_FLAP
+  kill:
+    type: ENTITY_ENDER_DRAGON_GROWL

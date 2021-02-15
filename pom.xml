@@ -44,17 +44,17 @@
                     <minimizeJar>true</minimizeJar>
                     <relocations>
                         <relocation>
-                            <pattern>space.devport.utils</pattern>
-                            <shadedPattern>${project.groupId}.utils</shadedPattern>
+                            <pattern>space.devport.dock</pattern>
+                            <shadedPattern>${project.groupId}.dock</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
-                                <exclude>space/devport/utils/xseries/XBiome*</exclude>
-                                <exclude>space/devport/utils/xseries/NMSExtras*</exclude>
-                                <exclude>space/devport/utils/xseries/NoteBlockMusic*</exclude>
+                                <exclude>space/devport/dock/xseries/XBiome*</exclude>
+                                <exclude>space/devport/dock/xseries/NMSExtras*</exclude>
+                                <exclude>space/devport/dock/xseries/NoteBlockMusic*</exclude>
                             </excludes>
                         </filter>
                     </filters>
@@ -77,6 +77,10 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
             <id>devport</id>
             <url>https://nexus.pvpcraft.cz/repository/devport/</url>
         </repository>
@@ -106,22 +110,23 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>space.devport.utils</groupId>
-            <artifactId>DevportUtils</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
             <version>2.10.9</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.dock</groupId>
+            <artifactId>dock</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <!-- SQL -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>4.0.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

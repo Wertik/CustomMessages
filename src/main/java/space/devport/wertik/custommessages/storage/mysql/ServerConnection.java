@@ -3,7 +3,6 @@ package space.devport.wertik.custommessages.storage.mysql;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.extern.java.Log;
-import space.devport.utils.logging.DebugLevel;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetProvider;

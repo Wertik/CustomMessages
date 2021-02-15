@@ -5,8 +5,8 @@ import lombok.experimental.UtilityClass;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.text.StringUtil;
-import space.devport.utils.utility.DependencyUtil;
+import space.devport.dock.util.DependencyUtil;
+import space.devport.dock.util.StringUtil;
 
 @UtilityClass
 public class MessageUtil {

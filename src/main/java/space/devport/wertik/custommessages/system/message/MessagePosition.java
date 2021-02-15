@@ -4,9 +4,9 @@ import com.google.common.base.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.text.StringUtil;
-import space.devport.utils.xseries.messages.ActionBar;
-import space.devport.utils.xseries.messages.Titles;
+import space.devport.dock.lib.xseries.messages.ActionBar;
+import space.devport.dock.lib.xseries.messages.Titles;
+import space.devport.dock.util.StringUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
 
 public enum MessagePosition {

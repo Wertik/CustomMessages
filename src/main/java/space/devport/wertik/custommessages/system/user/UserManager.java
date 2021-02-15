@@ -7,10 +7,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.callbacks.ExceptionCallback;
-import space.devport.utils.logging.DebugLevel;
-import space.devport.utils.utility.ParseUtil;
-import space.devport.utils.utility.ThreadUtil;
+import space.devport.dock.callbacks.ExceptionCallback;
+import space.devport.dock.util.ParseUtil;
+import space.devport.dock.util.ThreadUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.storage.IStorage;
 import space.devport.wertik.custommessages.storage.LoadCache;
@@ -79,7 +78,7 @@ public class UserManager {
 
     public CompletableFuture<Void> initializeStorage(StorageType force) {
         this.storageType = force == null ? ParseUtil.parseEnumHandled(plugin.getConfiguration().getString("storage.type", "json"),
-                StorageType.class, StorageType.JSON, e -> log.warning(String.format("Invalid storage type %s, using JSON as default.", e.getInput()))) : force;
+                StorageType.class, StorageType.JSON, e -> log.warning(() -> "Invalid storage type " + e.getInput() + ", using JSON as default.")) : force;
 
         switch (storageType) {
             case JSON:
@@ -90,7 +89,7 @@ public class UserManager {
                 ConnectionInfo connectionInfo = ConnectionInfo.load(plugin.getConfig().getConfigurationSection("storage.mysql"));
 
                 if (connectionInfo == null) {
-                    log.warning("Failed to load MySQL connection info from config.yml, using JSON.");
+                    log.warning(() -> "Failed to load MySQL connection info from config.yml, using JSON.");
                     initializeStorage(StorageType.JSON);
                     return CompletableFuture.completedFuture(null);
                 }
@@ -103,7 +102,7 @@ public class UserManager {
         return storage.initialize().thenAcceptAsync(res -> {
             if (!res) {
                 if (force == null) {
-                    log.warning("Failed to initialize storage, using JSON as default.");
+                    log.warning(() -> "Failed to initialize storage, using JSON as default.");
                     initializeStorage(StorageType.JSON);
                 } else
                     log.severe("Failed to initialize the default (JSON) storage type. Cannot function properly.");
@@ -156,7 +155,7 @@ public class UserManager {
         User user = new User(uniqueID);
         this.loadedUsers.put(uniqueID, user);
         storage.save(user);
-        log.log(DebugLevel.DEBUG, String.format("Created user %s", uniqueID.toString()));
+        log.fine(() -> "Created user " + uniqueID.toString());
         return user;
     }
 
@@ -172,7 +171,7 @@ public class UserManager {
             loadCache.setLoaded(uniqueID);
             if (user != null) {
                 loadedUsers.put(uniqueID, user);
-                log.log(DebugLevel.DEBUG, String.format("Loaded user %s", uniqueID.toString()));
+                log.fine(() -> "Loaded user " + uniqueID.toString());
             }
             return user;
         });
@@ -182,7 +181,7 @@ public class UserManager {
         User user = getUser(uniqueID);
         if (user != null) {
             storage.save(user);
-            log.log(DebugLevel.DEBUG, String.format("Saved used %s", uniqueID.toString()));
+            log.fine(() -> "Saved used " + uniqueID.toString());
         }
     }
 
@@ -195,12 +194,11 @@ public class UserManager {
                     if (loaded == null)
                         loaded = new HashSet<>();
 
-                    this.loadedUsers.putAll(loaded.parallelStream()
-                            .collect(Collectors.toMap(User::getUniqueID, u -> u)));
+                    this.loadedUsers.putAll(loaded.stream().collect(Collectors.toMap(User::getUniqueID, u -> u)));
                     log.info("Loaded " + loaded.size() + " user(s)...");
                 })
                 .exceptionally(e -> {
-                    log.severe("Could not load users: " + e.getMessage());
+                    log.severe(() -> "Could not load users due to: " + e.getMessage());
                     e.printStackTrace();
                     return null;
                 });
@@ -223,9 +221,9 @@ public class UserManager {
 
         checkInitialized();
         return storage.save(loadedUsers.values())
-                .thenRunAsync(() -> log.info(String.format("Saved %d user(s)...", loadedUsers.size())))
+                .thenRunAsync(() -> log.info(() -> "Saved " + loadedUsers.size() + " user(s)..."))
                 .exceptionally(e -> {
-                    log.severe(String.format("Could not save %d users: %s", loadedUsers.size(), e.getMessage()));
+                    log.severe(() -> "Could not save " + loadedUsers.size() + " users: " + e.getMessage());
                     e.printStackTrace();
                     return null;
                 });
@@ -237,9 +235,9 @@ public class UserManager {
             storage.save(loadedUsers.values()).thenRun(() -> {
                 storage.finish().thenAcceptAsync(res -> {
                     if (!res)
-                        log.warning("Failed to save users.");
+                        log.warning(() -> "Failed to save users.");
                     else
-                        log.info(String.format("Saved %d user(s)...", loadedUsers.size()));
+                        log.info(() -> "Saved " + loadedUsers.size() + " user(s)...");
                 }).exceptionally(e -> {
                     e.printStackTrace();
                     return null;

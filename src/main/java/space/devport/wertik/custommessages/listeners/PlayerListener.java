@@ -3,10 +3,10 @@ package space.devport.wertik.custommessages.listeners;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import space.devport.utils.DevportListener;
+import space.devport.dock.DockedListener;
 import space.devport.wertik.custommessages.MessagePlugin;
 
-public class PlayerListener extends DevportListener {
+public class PlayerListener extends DockedListener {
 
     private final MessagePlugin plugin;
 

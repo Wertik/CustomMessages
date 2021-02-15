@@ -1,7 +1,7 @@
 package space.devport.wertik.custommessages.system.message.type;
 
 import org.bukkit.OfflinePlayer;
-import space.devport.utils.text.message.Message;
+import space.devport.dock.text.message.Message;
 
 public interface ExtraParser {
 

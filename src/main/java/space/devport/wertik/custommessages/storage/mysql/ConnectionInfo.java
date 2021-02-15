@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.configuration.Configuration;
+import space.devport.dock.configuration.Configuration;
 
 public class ConnectionInfo {
 

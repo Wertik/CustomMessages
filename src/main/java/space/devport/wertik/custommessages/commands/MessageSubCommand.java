@@ -1,8 +1,8 @@
 package space.devport.wertik.custommessages.commands;
 
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.commands.SubCommand;
-import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.dock.commands.SubCommand;
+import space.devport.dock.commands.struct.ArgumentRange;
 import space.devport.wertik.custommessages.MessagePlugin;
 
 public abstract class MessageSubCommand extends SubCommand {

@@ -1,15 +1,16 @@
 package space.devport.wertik.custommessages.commands.subcommands;
 
 import lombok.extern.java.Log;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.callbacks.ExceptionCallback;
-import space.devport.utils.commands.struct.ArgumentRange;
-import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.utility.ParseUtil;
+import space.devport.dock.callbacks.ExceptionCallback;
+import space.devport.dock.commands.struct.ArgumentRange;
+import space.devport.dock.commands.struct.CommandResult;
+import space.devport.dock.util.ParseUtil;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.commands.MessageSubCommand;
 import space.devport.wertik.custommessages.system.message.type.MessageType;
