@@ -93,7 +93,7 @@ public class MessageMenu extends Menu {
                 MenuItem item;
                 if (used) {
                     item = new MenuItem(messageItemTaken);
-                    messageItemTaken.setClickAction(click -> plugin.getSoundRegistry().play(player, SoundType.MENU_USED));
+                    item.setClickAction(click -> plugin.getSoundRegistry().play(player, SoundType.MENU_USED));
                 } else {
                     item = new MenuItem(messageItem);
                     item.setClickAction((itemClick) -> {

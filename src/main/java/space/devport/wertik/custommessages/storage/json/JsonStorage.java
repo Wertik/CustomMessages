@@ -1,5 +1,6 @@
 package space.devport.wertik.custommessages.storage.json;
 
+import com.google.gson.reflect.TypeToken;
 import lombok.extern.java.Log;
 import space.devport.dock.util.json.GsonHelper;
 import space.devport.wertik.custommessages.MessagePlugin;
@@ -30,20 +31,22 @@ public class JsonStorage implements IStorage {
 
     @Override
     public CompletableFuture<Boolean> initialize() {
-        return gsonHelper.loadMapAsync(plugin.getDataFolder() + "/" + fileName, UUID.class, User.class)
-                .thenApplyAsync(loaded -> {
-                    if (loaded == null)
-                        loaded = new HashMap<>();
+        CompletableFuture<Map<UUID, User>> future = gsonHelper.loadAsync(plugin.getDataFolder() + "/" + fileName, new TypeToken<Map<UUID, User>>() {
+        }.getType());
 
-                    storedUsers.clear();
-                    storedUsers.putAll(loaded);
-                    log.fine(() -> "Loaded JSON storage.");
-                    return true;
-                }).exceptionally(e -> {
-                    log.warning(() -> String.format("Failed to load users: %s", e.getMessage()));
-                    e.printStackTrace();
-                    return false;
-                });
+        return future.thenApplyAsync(loaded -> {
+            if (loaded == null)
+                loaded = new HashMap<>();
+
+            storedUsers.clear();
+            storedUsers.putAll(loaded);
+            log.fine(() -> "Loaded " + storedUsers.size() + " user(s) from JSON storage.");
+            return true;
+        }).exceptionally(e -> {
+            log.warning(() -> String.format("Failed to load users: %s", e.getMessage()));
+            e.printStackTrace();
+            return false;
+        });
     }
 
     @Override
