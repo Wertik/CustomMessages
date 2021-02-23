@@ -101,12 +101,14 @@ public class ListenerRegistry {
 
             HandlerList.unregisterAll(listener);
         }
-        log.info(String.format("Unregistered %d listener(s)...", count));
+        log.info(() -> String.format("Unregistered %d listener(s)...", count));
     }
 
     private void handle(@NotNull Player player, @NotNull MessageType type, SoundType soundType, Object... extra) {
-        boolean isVanishSupported = plugin.getConfig().getBoolean("vanish-support", true);
-        if (isVanishSupported && isVanished(player)) return;
+        boolean vanishSupport = plugin.getConfig().getBoolean("vanish-support", false);
+
+        if (vanishSupport && isVanished(player))
+            return;
 
         messageManager.getFormattedMessage(player, type, extra).thenAcceptAsync(message -> {
             messageManager.getPosition().display(message);
@@ -116,7 +118,8 @@ public class ListenerRegistry {
 
     private boolean isVanished(Player player) {
         for (MetadataValue meta : player.getMetadata("vanished")) {
-            if (meta.asBoolean()) return true;
+            if (meta.asBoolean())
+                return true;
         }
         return false;
     }
