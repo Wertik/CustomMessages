@@ -29,6 +29,9 @@ actions:
   leave: true
   kill: true
 
+# Enable vanish support for the Join/Leave message
+vanish-support: true
+
 # Configure the format for leave/join/kill messages.
 # Remove format to disable the message.
 formats:
