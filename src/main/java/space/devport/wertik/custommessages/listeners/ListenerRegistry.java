@@ -1,7 +1,6 @@
 package space.devport.wertik.custommessages.listeners;
 
 import lombok.extern.java.Log;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,8 +10,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import space.devport.wertik.custommessages.MessagePlugin;
 import space.devport.wertik.custommessages.sounds.SoundPlayType;
 import space.devport.wertik.custommessages.sounds.SoundType;
@@ -43,7 +42,9 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onJoin(PlayerJoinEvent event) {
                     event.setJoinMessage(null);
-                    handle(event.getPlayer(), MessageType.JOIN, SoundType.MESSAGE_JOIN);
+                    if (!isVanished(event.getPlayer())) {
+                        handle(event.getPlayer(), MessageType.JOIN, SoundType.MESSAGE_JOIN);
+                    }
                 }
             });
 
@@ -52,7 +53,9 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onLeave(PlayerQuitEvent event) {
                     event.setQuitMessage(null);
-                    handle(event.getPlayer(), MessageType.LEAVE, SoundType.MESSAGE_LEAVE, event.getPlayer().getWorld());
+                    if (!isVanished(event.getPlayer())) {
+                        handle(event.getPlayer(), MessageType.LEAVE, SoundType.MESSAGE_LEAVE, event.getPlayer().getWorld());
+                    }
                 }
 
                 @EventHandler
@@ -109,5 +112,12 @@ public class ListenerRegistry {
             messageManager.getPosition().display(message);
             plugin.getSoundRegistry().play(player, soundType);
         });
+    }
+
+    private boolean isVanished(Player player) {
+        for (MetadataValue meta : player.getMetadata("vanished")) {
+            if (meta.asBoolean()) return true;
+        }
+        return false;
     }
 }
