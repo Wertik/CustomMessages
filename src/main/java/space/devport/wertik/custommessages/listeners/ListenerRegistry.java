@@ -44,9 +44,9 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onJoin(PlayerJoinEvent event) {
                     event.setJoinMessage(null);
-                    if (vanishSupport && !isVanished(event.getPlayer())) {
-                        handle(event.getPlayer(), MessageType.JOIN, SoundType.MESSAGE_JOIN);
-                    }
+                    if (vanishSupport && isVanished(event.getPlayer())) return;
+
+                    handle(event.getPlayer(), MessageType.JOIN, SoundType.MESSAGE_JOIN);
                 }
             });
 
@@ -55,9 +55,9 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onLeave(PlayerQuitEvent event) {
                     event.setQuitMessage(null);
-                    if (vanishSupport && !isVanished(event.getPlayer())) {
-                        handle(event.getPlayer(), MessageType.LEAVE, SoundType.MESSAGE_LEAVE, event.getPlayer().getWorld());
-                    }
+                    if (vanishSupport && isVanished(event.getPlayer())) return;
+
+                    handle(event.getPlayer(), MessageType.LEAVE, SoundType.MESSAGE_LEAVE, event.getPlayer().getWorld());
                 }
 
                 @EventHandler
