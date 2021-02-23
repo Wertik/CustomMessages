@@ -37,15 +37,12 @@ public class ListenerRegistry {
     private final Map<MessageType, Listener> registeredListeners = new HashMap<>();
 
     public void registerListeners() {
-        boolean vanishSupport = plugin.getConfig().getBoolean("vanish-support", true);
 
         if (messageManager.isEnabled(MessageType.JOIN))
             registerListener(MessageType.JOIN, new Listener() {
                 @EventHandler
                 public void onJoin(PlayerJoinEvent event) {
                     event.setJoinMessage(null);
-                    if (vanishSupport && isVanished(event.getPlayer())) return;
-
                     handle(event.getPlayer(), MessageType.JOIN, SoundType.MESSAGE_JOIN);
                 }
             });
@@ -55,8 +52,6 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onLeave(PlayerQuitEvent event) {
                     event.setQuitMessage(null);
-                    if (vanishSupport && isVanished(event.getPlayer())) return;
-
                     handle(event.getPlayer(), MessageType.LEAVE, SoundType.MESSAGE_LEAVE, event.getPlayer().getWorld());
                 }
 
@@ -110,6 +105,9 @@ public class ListenerRegistry {
     }
 
     private void handle(@NotNull Player player, @NotNull MessageType type, SoundType soundType, Object... extra) {
+        boolean isVanishSupported = plugin.getConfig().getBoolean("vanish-support", true);
+        if (isVanishSupported && isVanished(player)) return;
+
         messageManager.getFormattedMessage(player, type, extra).thenAcceptAsync(message -> {
             messageManager.getPosition().display(message);
             plugin.getSoundRegistry().play(player, soundType);
