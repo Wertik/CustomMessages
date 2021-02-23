@@ -28,6 +28,7 @@ public class ListenerRegistry {
     private final MessagePlugin plugin;
     private final MessageManager messageManager;
 
+
     public ListenerRegistry(MessagePlugin plugin) {
         this.plugin = plugin;
         this.messageManager = plugin.getMessageManager();
@@ -36,13 +37,14 @@ public class ListenerRegistry {
     private final Map<MessageType, Listener> registeredListeners = new HashMap<>();
 
     public void registerListeners() {
+        boolean vanishSupport = plugin.getConfig().getBoolean("vanish-support", true);
 
         if (messageManager.isEnabled(MessageType.JOIN))
             registerListener(MessageType.JOIN, new Listener() {
                 @EventHandler
                 public void onJoin(PlayerJoinEvent event) {
                     event.setJoinMessage(null);
-                    if (!isVanished(event.getPlayer())) {
+                    if (vanishSupport && !isVanished(event.getPlayer())) {
                         handle(event.getPlayer(), MessageType.JOIN, SoundType.MESSAGE_JOIN);
                     }
                 }
@@ -53,7 +55,7 @@ public class ListenerRegistry {
                 @EventHandler
                 public void onLeave(PlayerQuitEvent event) {
                     event.setQuitMessage(null);
-                    if (!isVanished(event.getPlayer())) {
+                    if (vanishSupport && !isVanished(event.getPlayer())) {
                         handle(event.getPlayer(), MessageType.LEAVE, SoundType.MESSAGE_LEAVE, event.getPlayer().getWorld());
                     }
                 }
